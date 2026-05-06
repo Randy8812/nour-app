@@ -12,9 +12,30 @@ const FREE_WORDS_LIMIT = 15;
 // SONS
 // ============================================
 
+let audioCtx = null;
+
+function getAudioContext() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if (audioCtx.state === "suspended") {
+    audioCtx.resume();
+  }
+  return audioCtx;
+}
+
+// Initialiser l'audio au premier clic
+document.addEventListener(
+  "click",
+  () => {
+    getAudioContext();
+  },
+  { once: true },
+);
+
 function playSound(type) {
   try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const ctx = getAudioContext();
 
     if (type === "correct") {
       // Son ding joyeux — deux notes montantes
