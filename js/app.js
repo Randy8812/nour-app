@@ -1179,7 +1179,8 @@ function renderProgress() {
   renderProgressChart();
 
   // Classement famille
-  renderFamilyLeaderboard();
+  // Classement famille
+  setTimeout(() => renderFamilyLeaderboard(), 100);
 
   // Bouton changer de profil
   let changeBtn = document.getElementById("changeProfileBtn");
