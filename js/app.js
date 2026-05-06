@@ -1178,6 +1178,9 @@ function renderProgress() {
   updateBadges();
   renderProgressChart();
 
+  // Classement famille
+  renderFamilyLeaderboard();
+
   // Bouton changer de profil
   let changeBtn = document.getElementById("changeProfileBtn");
   if (!changeBtn) {
@@ -1202,6 +1205,94 @@ function renderProgress() {
     logoutBtn.onclick = () => logoutUser();
     document.getElementById("tab-progress").appendChild(logoutBtn);
   }
+}
+
+function renderFamilyLeaderboard() {
+  const oldBoard = document.getElementById("familyLeaderboard");
+  if (oldBoard) oldBoard.remove();
+
+  const profiles = loadProfiles();
+  if (profiles.length < 2) return; // Besoin d'au moins 2 profils
+
+  // Trier par XP décroissant
+  const ranked = profiles
+    .map((p, i) => ({
+      ...p,
+      index: i,
+      xp: p.state?.xp || 0,
+      streak: p.state?.streak || 0,
+      words: p.state?.learnedWords?.length || 0,
+    }))
+    .sort((a, b) => b.xp - a.xp);
+
+  const medals = ["🥇", "🥈", "🥉", "🏅"];
+  const isCurrentTop = ranked[0].index === currentProfile;
+
+  const board = document.createElement("div");
+  board.id = "familyLeaderboard";
+  board.style.cssText = `
+    background:linear-gradient(145deg,#142b1f,#1a3628);
+    border:1px solid rgba(212,168,67,0.2);
+    border-radius:20px; padding:20px;
+    box-shadow:0 8px 32px rgba(0,0,0,0.4);
+    position:relative; overflow:hidden;
+  `;
+
+  board.innerHTML = `
+    <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#d4a843,#f0c860,#1db974);"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <h3 style="font-size:15px;font-weight:800;color:#f5f0e8;font-family:Outfit,sans-serif;">🏆 Classement Famille</h3>
+      <span style="font-size:12px;color:rgba(245,240,232,0.4);font-family:Outfit,sans-serif;">${profiles.length} profils</span>
+    </div>
+    ${ranked
+      .map((p, i) => {
+        const isMe = p.index === currentProfile;
+        return `
+        <div style="
+          display:flex; align-items:center; gap:12px;
+          padding:12px 14px; border-radius:12px; margin-bottom:8px;
+          background:${isMe ? "rgba(212,168,67,0.1)" : "rgba(245,240,232,0.03)"};
+          border:1px solid ${isMe ? "rgba(212,168,67,0.3)" : "rgba(245,240,232,0.06)"};
+          transition:all 0.2s;
+        ">
+          <span style="font-size:24px;width:32px;text-align:center;">${medals[i] || "🏅"}</span>
+          <span style="font-size:28px;">${p.avatar}</span>
+          <div style="flex:1;">
+            <div style="font-size:14px;font-weight:700;color:${isMe ? "#f0c860" : "#f5f0e8"};font-family:Outfit,sans-serif;">
+              ${p.name} ${isMe ? "(toi)" : ""}
+            </div>
+            <div style="font-size:11px;color:rgba(245,240,232,0.4);font-family:Outfit,sans-serif;margin-top:2px;">
+              ${p.words} mots · 🔥 ${p.streak} jours
+            </div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:16px;font-weight:800;color:#d4a843;font-family:Outfit,sans-serif;">
+              ${p.xp}
+            </div>
+            <div style="font-size:10px;color:rgba(245,240,232,0.4);font-family:Outfit,sans-serif;">XP</div>
+          </div>
+        </div>
+      `;
+      })
+      .join("")}
+    ${
+      isCurrentTop
+        ? `
+      <div style="text-align:center;padding:8px;font-size:13px;color:#1db974;font-family:Outfit,sans-serif;font-weight:600;">
+        🎉 Tu es en tête de la famille !
+      </div>
+    `
+        : `
+      <div style="text-align:center;padding:8px;font-size:13px;color:rgba(245,240,232,0.4);font-family:Outfit,sans-serif;">
+        Continue pour grimper dans le classement !
+      </div>
+    `
+    }
+  `;
+
+  const badgesSection = document.querySelector(".badges-section");
+  if (badgesSection) badgesSection.after(board);
+  else document.getElementById("tab-progress").appendChild(board);
 }
 
 function renderProgressChart() {
