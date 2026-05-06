@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Politique de Confidentialité — Nour</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root { --bg:#091510; --card:#142b1f; --gold:#d4a843; --em:#1db974; --white:#f5f0e8; --dim:rgba(245,240,232,0.55); --faint:rgba(245,240,232,0.07); }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:var(--bg); color:var(--white); font-family:'Outfit',sans-serif; font-size:16px; line-height:1.7; padding:0 0 60px; }
+    .header { background:linear-gradient(180deg,#0f2018,var(--bg)); padding:40px 24px 24px; border-bottom:1px solid var(--faint); display:flex; align-items:center; gap:16px; }
+    .back-btn { background:var(--card); border:1px solid var(--faint); color:var(--white); padding:8px 16px; border-radius:99px; font-size:14px; font-family:'Outfit',sans-serif; cursor:pointer; text-decoration:none; }
+    .logo { font-size:22px; font-weight:800; background:linear-gradient(135deg,var(--gold),var(--em)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; letter-spacing:2px; }
+    .container { max-width:680px; margin:0 auto; padding:40px 24px; }
+    h1 { font-size:28px; font-weight:800; color:var(--white); margin-bottom:8px; }
+    .date { font-size:13px; color:var(--dim); margin-bottom:40px; }
+    h2 { font-size:18px; font-weight:700; color:var(--gold); margin:32px 0 12px; }
+    p { color:var(--dim); margin-bottom:12px; }
+    ul { color:var(--dim); padding-left:20px; margin-bottom:12px; }
+    li { margin-bottom:6px; }
+    a { color:var(--em); }
+    .highlight { background:var(--card); border:1px solid rgba(29,185,116,0.2); border-radius:12px; padding:16px 20px; margin:16px 0; }
+    .divider { height:1px; background:var(--faint); margin:32px 0; }
+    table { width:100%; border-collapse:collapse; margin:16px 0; }
+    th { background:var(--card); color:var(--gold); padding:12px; text-align:left; font-weight:700; border:1px solid var(--faint); }
+    td { padding:12px; color:var(--dim); border:1px solid var(--faint); vertical-align:top; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <a href="index.html" class="back-btn">← Retour</a>
+    <span class="logo">ن Nour</span>
+  </div>
+  <div class="container">
+    <h1>Politique de Confidentialité</h1>
+    <p class="date">Dernière mise à jour : mai 2025 — Conforme au RGPD</p>
+
+    <div class="highlight">
+      <p>🔒 <strong>Notre engagement :</strong> Nour collecte le minimum de données nécessaires au fonctionnement de l'app. Nous ne vendons jamais vos données à des tiers.</p>
+    </div>
+
+    <h2>1. Responsable du traitement</h2>
+    <p><strong>Randy Osei</strong> — Auto-entrepreneur</p>
+    <p>SIRET : 924 098 338 00016</p>
+    <p>Email : <a href="mailto:rdy8812@gmail.com">rdy8812@gmail.com</a></p>
+
+    <div class="divider"></div>
+
+    <h2>2. Données collectées</h2>
+    <table>
+      <tr><th>Donnée</th><th>Pourquoi</th><th>Durée de conservation</th></tr>
+      <tr><td>Adresse email</td><td>Sauvegarde de progression, communication</td><td>Jusqu'à la suppression du compte</td></tr>
+      <tr><td>Progression (mots appris, streak, XP)</td><td>Fonctionnement de l'app</td><td>Stockée localement sur votre appareil</td></tr>
+      <tr><td>Données de paiement</td><td>Traitement de l'abonnement</td><td>Gérées par Stripe — jamais stockées par Nour</td></tr>
+    </table>
+    <p>La progression est stockée <strong>localement sur votre appareil</strong> (localStorage). Elle n'est pas transmise à nos serveurs sauf l'email.</p>
+
+    <div class="divider"></div>
+
+    <h2>3. Base légale du traitement</h2>
+    <ul>
+      <li><strong>Email :</strong> Consentement explicite lors de la saisie</li>
+      <li><strong>Paiement :</strong> Exécution du contrat d'abonnement</li>
+      <li><strong>Progression :</strong> Intérêt légitime pour fournir le service</li>
+    </ul>
+
+    <div class="divider"></div>
+
+    <h2>4. Partage des données</h2>
+    <p>Vos données sont partagées uniquement avec :</p>
+    <ul>
+      <li><strong>Supabase</strong> (stockage email) — serveurs en Europe</li>
+      <li><strong>Stripe</strong> (paiement) — certifié PCI-DSS niveau 1</li>
+      <li><strong>Netlify</strong> (hébergement) — aucune donnée personnelle</li>
+    </ul>
+    <p>Aucune donnée n'est vendue ou transmise à des annonceurs ou partenaires commerciaux.</p>
+
+    <div class="divider"></div>
+
+    <h2>5. Vos droits (RGPD)</h2>
+    <p>Conformément au Règlement Général sur la Protection des Données, vous disposez des droits suivants :</p>
+    <ul>
+      <li><strong>Droit d'accès</strong> — obtenir une copie de vos données</li>
+      <li><strong>Droit de rectification</strong> — corriger vos données</li>
+      <li><strong>Droit à l'effacement</strong> — supprimer vos données</li>
+      <li><strong>Droit à la portabilité</strong> — recevoir vos données dans un format lisible</li>
+      <li><strong>Droit d'opposition</strong> — s'opposer au traitement</li>
+    </ul>
+    <p>Pour exercer ces droits : <a href="mailto:rdy8812@gmail.com">rdy8812@gmail.com</a></p>
+    <p>Délai de réponse : 30 jours maximum.</p>
+
+    <div class="divider"></div>
+
+    <h2>6. Cookies et stockage local</h2>
+    <p>Nour utilise le <strong>localStorage</strong> de votre navigateur pour sauvegarder votre progression, vos profils et vos préférences. Ce n'est pas un cookie de tracking — aucune donnée n'est envoyée à des serveurs tiers.</p>
+    <p>Vous pouvez effacer ces données à tout moment depuis les paramètres de votre navigateur.</p>
+
+    <div class="divider"></div>
+
+    <h2>7. Sécurité</h2>
+    <p>Vos données sont protégées par :</p>
+    <ul>
+      <li>Connexions HTTPS chiffrées</li>
+      <li>Aucun stockage de mot de passe (pas de compte utilisateur)</li>
+      <li>Paiements traités exclusivement par Stripe (certifié PCI-DSS)</li>
+    </ul>
+
+    <div class="divider"></div>
+
+    <h2>8. Modifications</h2>
+    <p>Cette politique peut être mise à jour. Nous vous informerons par email en cas de changement significatif.</p>
+
+    <div class="divider"></div>
+
+    <h2>9. Réclamation</h2>
+    <p>Si vous estimez que le traitement de vos données ne respecte pas la réglementation, vous pouvez introduire une réclamation auprès de la <strong>CNIL</strong> : <a href="https://www.cnil.fr" target="_blank">cnil.fr</a></p>
+  </div>
+</body>
+</html>

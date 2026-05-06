@@ -1,0 +1,26 @@
+{
+  "name": "Nour — Arabe Coranique",
+  "short_name": "Nour",
+  "description": "Comprends le Coran mot par mot",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0d1f1a",
+  "theme_color": "#0d1f1a",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "img/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "img/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "lifestyle"],
+  "lang": "fr"
+}
