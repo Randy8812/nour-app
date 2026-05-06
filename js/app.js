@@ -9,6 +9,76 @@ const STRIPE_PAYMENT_LINK = "https://buy.stripe.com/eVq8wO85U5o7f2u7Ef2Ji00";
 const FREE_WORDS_LIMIT = 15;
 
 // ============================================
+// SONS
+// ============================================
+
+function playSound(type) {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+
+    if (type === "correct") {
+      // Son ding joyeux — deux notes montantes
+      const notes = [523, 659, 784]; // Do, Mi, Sol
+      notes.forEach((freq, i) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.frequency.value = freq;
+        osc.type = "sine";
+        gain.gain.setValueAtTime(0, ctx.currentTime + i * 0.1);
+        gain.gain.linearRampToValueAtTime(
+          0.3,
+          ctx.currentTime + i * 0.1 + 0.02,
+        );
+        gain.gain.exponentialRampToValueAtTime(
+          0.001,
+          ctx.currentTime + i * 0.1 + 0.25,
+        );
+        osc.start(ctx.currentTime + i * 0.1);
+        osc.stop(ctx.currentTime + i * 0.1 + 0.3);
+      });
+    } else if (type === "wrong") {
+      // Son grave court
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.frequency.value = 220;
+      osc.type = "sawtooth";
+      gain.gain.setValueAtTime(0.2, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.3);
+    } else if (type === "milestone") {
+      // Fanfare courte — 4 notes
+      const notes = [523, 659, 784, 1046];
+      notes.forEach((freq, i) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.frequency.value = freq;
+        osc.type = "sine";
+        gain.gain.setValueAtTime(0, ctx.currentTime + i * 0.12);
+        gain.gain.linearRampToValueAtTime(
+          0.25,
+          ctx.currentTime + i * 0.12 + 0.02,
+        );
+        gain.gain.exponentialRampToValueAtTime(
+          0.001,
+          ctx.currentTime + i * 0.12 + 0.3,
+        );
+        osc.start(ctx.currentTime + i * 0.12);
+        osc.stop(ctx.currentTime + i * 0.12 + 0.35);
+      });
+    }
+  } catch (e) {
+    // Audio non supporté — pas grave
+  }
+}
+
+// ============================================
 // SRS
 // ============================================
 const SRS_INTERVALS = [1, 3, 7, 14, 30, 90];
@@ -792,6 +862,7 @@ function goNextWord() {
         const level =
           LEVELS.find((l) => count >= l.min && count <= l.max) ||
           LEVELS[LEVELS.length - 1];
+        playSound("milestone");
         setTimeout(
           () =>
             showShareTrigger("milestone", {
@@ -852,6 +923,7 @@ function handleLearnQuizAnswer(btn, selected, correct, wordId) {
     feedback.className = "quiz-feedback success";
     showXPAnimation(isKidProfile() ? getKidMessage("xp") : "+5 XP");
     haptic([50]);
+    playSound("correct");
     setTimeout(
       () => {
         if (state.mode === "quiz") goNextWord();
@@ -869,6 +941,7 @@ function handleLearnQuizAnswer(btn, selected, correct, wordId) {
     feedback.textContent = errMsg;
     feedback.className = "quiz-feedback error";
     haptic([100, 50, 100]);
+    playSound("wrong");
   }
 
   document.getElementById("nextWord").textContent = "Mot suivant →";
@@ -961,6 +1034,7 @@ function handleSRSAnswer(btn, selected, correct, wordId) {
     feedback.className = "quiz-feedback success";
     showXPAnimation("+3 XP");
     haptic([50]);
+    playSound("correct");
     setTimeout(() => {
       srsCurrentIndex++;
       saveState();
