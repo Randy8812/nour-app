@@ -485,6 +485,215 @@ function getKidMessage(type) {
 }
 
 // ============================================
+// DÉFI DU JOUR
+// ============================================
+
+function getDailyChallenge() {
+  const today = getTodayStr();
+
+  // Mot du jour basé sur la date (déterministe)
+  const dayOfYear = Math.floor(
+    (new Date() - new Date(new Date().getFullYear(), 0, 0)) / 86400000,
+  );
+  const wordIndex = dayOfYear % WORDS.length;
+  const word = WORDS[wordIndex];
+
+  // Vérifier si déjà complété aujourd'hui
+  const completedKey = `nour_daily_${currentProfile}_${today}`;
+  const isCompleted = localStorage.getItem(completedKey) === "true";
+
+  return { word, wordIndex, isCompleted, completedKey, today };
+}
+
+function completeDailyChallenge() {
+  const { completedKey } = getDailyChallenge();
+  localStorage.setItem(completedKey, "true");
+  state.xp += 20;
+  saveState();
+  updateUI();
+  showXPAnimation("+20 XP 🎯");
+  playSound("milestone");
+  showToast("🎯 Défi du jour complété ! +20 XP");
+  renderDailyChallenge();
+}
+
+function renderDailyChallenge() {
+  const old = document.getElementById("dailyChallenge");
+  if (old) old.remove();
+
+  const { word, isCompleted } = getDailyChallenge();
+  if (!word) return;
+
+  const card = document.createElement("div");
+  card.id = "dailyChallenge";
+  card.style.cssText = `
+    background:linear-gradient(145deg,#1a1a35,#20203f);
+    border:1px solid ${isCompleted ? "rgba(29,185,116,0.4)" : "rgba(212,168,67,0.3)"};
+    border-radius:20px; padding:20px;
+    box-shadow:0 8px 32px rgba(0,0,0,0.4), ${isCompleted ? "0 0 20px rgba(29,185,116,0.1)" : "0 0 20px rgba(212,168,67,0.1)"};
+    position:relative; overflow:hidden; margin-bottom:4px;
+  `;
+
+  card.innerHTML = `
+    <div style="position:absolute;top:0;left:0;right:0;height:3px;background:${isCompleted ? "linear-gradient(90deg,#1db974,#26d984)" : "linear-gradient(90deg,#d4a843,#f0c860)"};"></div>
+    
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="font-size:22px;">🎯</span>
+        <div>
+          <div style="font-size:14px;font-weight:800;color:#f5f0e8;font-family:Outfit,sans-serif;">Défi du jour</div>
+          <div style="font-size:11px;color:rgba(245,240,232,0.4);font-family:Outfit,sans-serif;">Nouveau défi demain</div>
+        </div>
+      </div>
+      ${
+        isCompleted
+          ? '<span style="background:rgba(29,185,116,0.15);color:#1db974;border:1px solid rgba(29,185,116,0.3);padding:4px 12px;border-radius:99px;font-size:12px;font-weight:700;font-family:Outfit,sans-serif;">✅ Complété</span>'
+          : '<span style="background:rgba(212,168,67,0.15);color:#d4a843;border:1px solid rgba(212,168,67,0.3);padding:4px 12px;border-radius:99px;font-size:12px;font-weight:700;font-family:Outfit,sans-serif;">+20 XP 🏆</span>'
+      }
+    </div>
+
+    <div style="display:flex;align-items:center;gap:16px;background:rgba(5,14,10,0.5);border-radius:14px;padding:16px;">
+      <div style="font-family:Amiri,serif;font-size:52px;color:#d4a843;direction:rtl;filter:drop-shadow(0 0 12px rgba(212,168,67,0.3));">${word.arabic}</div>
+      <div style="flex:1;">
+        <div style="font-size:13px;color:rgba(29,185,116,0.8);font-style:italic;font-family:Outfit,sans-serif;margin-bottom:4px;">${word.transliteration}</div>
+        <div style="font-size:16px;font-weight:700;color:#f5f0e8;font-family:Outfit,sans-serif;">${word.meaning}</div>
+        <div style="font-size:11px;color:rgba(245,240,232,0.35);font-family:Outfit,sans-serif;margin-top:4px;">${word.verseRef}</div>
+      </div>
+    </div>
+
+    ${
+      !isCompleted
+        ? `
+      <button onclick="showDailyQuiz()" style="
+        width:100%; margin-top:14px;
+        background:linear-gradient(135deg,#d4a843,#f0c860);
+        color:#050e0a; border:none; border-radius:99px;
+        padding:14px; font-size:15px; font-weight:800;
+        font-family:Outfit,sans-serif; cursor:pointer;
+        box-shadow:0 4px 20px rgba(212,168,67,0.4);
+      ">Relever le défi 🎯</button>
+    `
+        : `
+      <div style="text-align:center;padding:10px;font-size:13px;color:rgba(29,185,116,0.7);font-family:Outfit,sans-serif;">
+        💡 ${word.tip}
+      </div>
+    `
+    }
+  `;
+
+  // Insérer en haut de l'onglet Apprendre
+  const learnPanel = document.getElementById("tab-learn");
+  const sectionHeader = learnPanel?.querySelector(".section-header");
+  if (sectionHeader) {
+    sectionHeader.after(card);
+  }
+}
+
+function showDailyQuiz() {
+  const { word } = getDailyChallenge();
+  if (!word) return;
+
+  const overlay = document.createElement("div");
+  overlay.id = "dailyQuizOverlay";
+  overlay.style.cssText = `
+    position:fixed; inset:0; background:rgba(0,0,0,0.85);
+    display:flex; align-items:flex-end; justify-content:center;
+    z-index:300; backdrop-filter:blur(8px);
+    animation:fadeIn 0.3s ease;
+  `;
+
+  const correct = word.meaning;
+  const wrongs = WRONG_ANSWERS.filter((w) => !correct.includes(w))
+    .sort(() => Math.random() - 0.5)
+    .slice(0, 3);
+  const options = [correct, ...wrongs].sort(() => Math.random() - 0.5);
+
+  overlay.innerHTML = `
+    <div style="
+      background:linear-gradient(180deg,#1a1a35,#111125);
+      border-radius:24px 24px 0 0; padding:28px 24px 48px;
+      width:100%; max-width:480px;
+      border-top:3px solid #d4a843;
+      box-shadow:0 -20px 60px rgba(0,0,0,0.5);
+      animation:slideUp 0.35s cubic-bezier(0.34,1.2,0.64,1);
+    ">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+        <h3 style="font-size:18px;font-weight:800;color:#f5f0e8;font-family:Outfit,sans-serif;">🎯 Défi du jour</h3>
+        <button onclick="document.getElementById('dailyQuizOverlay').remove()" style="background:none;border:none;color:rgba(245,240,232,0.4);font-size:22px;cursor:pointer;">✕</button>
+      </div>
+
+      <div style="text-align:center;margin-bottom:20px;">
+        <div style="font-family:Amiri,serif;font-size:72px;color:#d4a843;filter:drop-shadow(0 0 20px rgba(212,168,67,0.4));">${word.arabic}</div>
+        <div style="font-size:16px;color:rgba(245,240,232,0.6);font-family:Outfit,sans-serif;margin-top:4px;">Que signifie ce mot ?</div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:10px;" id="dailyOptions">
+        ${options
+          .map(
+            (opt) => `
+          <button onclick="handleDailyAnswer(this, '${opt.replace(/'/g, "\'")}', '${correct.replace(/'/g, "\'")}')" style="
+            background:rgba(245,240,232,0.05); border:1px solid rgba(245,240,232,0.1);
+            border-radius:14px; padding:15px 18px; font-size:15px;
+            color:#f5f0e8; font-family:Outfit,sans-serif; font-weight:500;
+            cursor:pointer; text-align:left; transition:all 0.15s;
+          ">${opt}</button>
+        `,
+          )
+          .join("")}
+      </div>
+      <div id="dailyFeedback" style="display:none;margin-top:14px;padding:14px;border-radius:12px;text-align:center;font-weight:700;font-family:Outfit,sans-serif;font-size:15px;"></div>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+}
+
+function handleDailyAnswer(btn, selected, correct) {
+  document
+    .querySelectorAll("#dailyOptions button")
+    .forEach((b) => (b.style.pointerEvents = "none"));
+  const feedback = document.getElementById("dailyFeedback");
+
+  if (selected === correct) {
+    btn.style.background = "rgba(34,197,94,0.15)";
+    btn.style.borderColor = "#22c55e";
+    btn.style.color = "#22c55e";
+    feedback.textContent = "🎉 Excellent ! Tu as relevé le défi du jour !";
+    feedback.style.cssText +=
+      "display:block;background:rgba(34,197,94,0.1);color:#22c55e;border:1px solid rgba(34,197,94,0.3);";
+    haptic([50]);
+    playSound("milestone");
+    setTimeout(() => {
+      document.getElementById("dailyQuizOverlay")?.remove();
+      completeDailyChallenge();
+    }, 1500);
+  } else {
+    btn.style.background = "rgba(239,68,68,0.1)";
+    btn.style.borderColor = "#ef4444";
+    btn.style.color = "#ef4444";
+    document.querySelectorAll("#dailyOptions button").forEach((b) => {
+      if (b.textContent === correct) {
+        b.style.background = "rgba(34,197,94,0.1)";
+        b.style.borderColor = "#22c55e";
+        b.style.color = "#22c55e";
+      }
+    });
+    feedback.textContent = `❌ C'était : ${correct}`;
+    feedback.style.cssText +=
+      "display:block;background:rgba(239,68,68,0.1);color:#ef4444;border:1px solid rgba(239,68,68,0.3);";
+    haptic([100, 50, 100]);
+    playSound("wrong");
+    const retryBtn = document.createElement("button");
+    retryBtn.textContent = "Fermer";
+    retryBtn.style.cssText =
+      "margin-top:12px;width:100%;background:rgba(245,240,232,0.07);border:1px solid rgba(245,240,232,0.1);border-radius:99px;padding:12px;font-size:14px;color:rgba(245,240,232,0.6);font-family:Outfit,sans-serif;cursor:pointer;";
+    retryBtn.onclick = () =>
+      document.getElementById("dailyQuizOverlay")?.remove();
+    document.getElementById("dailyFeedback").after(retryBtn);
+  }
+}
+
+// ============================================
 // STATE
 // ============================================
 
@@ -716,6 +925,8 @@ function showApp() {
   startPremiumWatcher().catch(() => {});
   // Appliquer thème enfant si nécessaire
   applyKidTheme();
+  // Afficher défi du jour
+  setTimeout(() => renderDailyChallenge(), 200);
   document.querySelector(".header-logo").addEventListener("click", () => {
     document.getElementById("app").classList.add("hidden");
     showProfiles();
@@ -1179,8 +1390,7 @@ function renderProgress() {
   renderProgressChart();
 
   // Classement famille
-  // Classement famille
-  setTimeout(() => renderFamilyLeaderboard(), 100);
+  renderFamilyLeaderboard();
 
   // Bouton changer de profil
   let changeBtn = document.getElementById("changeProfileBtn");
