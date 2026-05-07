@@ -1016,6 +1016,168 @@ function shareCurrentWord() {
   });
 }
 
+// ============================================
+// QUIZ VARIÉS AVEC PIÈGES
+// ============================================
+
+function getQuizType(wordIndex) {
+  const learnedCount = state.learnedWords.length;
+  const level = localStorage.getItem("nour_user_level") || "beginner";
+
+  // Seuils d'activation selon le niveau
+  const thresholds = {
+    beginner: { C: 5, B: 10, E: 15, D: 20 },
+    intermediate: { C: 2, B: 5, E: 8, D: 12 },
+    advanced: { C: 1, B: 2, E: 3, D: 5 },
+  };
+  const t = thresholds[level] || thresholds.beginner;
+
+  // Probabilités selon le niveau
+  const weights = {
+    beginner: { A: 0.6, C: 0.2, B: 0.1, E: 0.05, D: 0.05 },
+    intermediate: { A: 0.35, C: 0.25, B: 0.15, E: 0.15, D: 0.1 },
+    advanced: { A: 0.2, C: 0.25, B: 0.15, E: 0.2, D: 0.2 },
+  };
+  const w = weights[level] || weights.beginner;
+
+  // Types disponibles selon mots appris
+  let available = ["A"];
+  if (learnedCount >= t.C) available.push("C");
+  if (learnedCount >= t.B) available.push("B");
+  if (learnedCount >= t.E) available.push("E");
+  if (learnedCount >= t.D) available.push("D");
+
+  if (available.length === 1) return "A";
+
+  // Tirage pondéré parmi les disponibles
+  const filtered = available.filter((t) => w[t]);
+  const total = filtered.reduce((sum, t) => sum + w[t], 0);
+  let rand = Math.random() * total;
+  for (const type of filtered) {
+    rand -= w[type];
+    if (rand <= 0) return type;
+  }
+  return "A";
+}
+
+function buildQuizData(word, type) {
+  const learnedWords = WORDS.filter(
+    (w) => state.learnedWords.includes(w.id) && w.id !== word.id,
+  );
+
+  switch (type) {
+    case "A": {
+      // Mot arabe → Sens (standard)
+      const correct = word.meaning;
+      const wrongs = getCloseWrongAnswers(word, "meaning", 3);
+      return {
+        title: "🎯 As-tu retenu ?",
+        question: "Quel est le sens de ce mot ?",
+        display: word.arabic,
+        displayType: "arabic",
+        correct,
+        options: shuffle([correct, ...wrongs]),
+      };
+    }
+    case "B": {
+      // Mot arabe → Translittération
+      const correct = word.transliteration;
+      const wrongs = WORDS.filter((w) => w.id !== word.id)
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 3)
+        .map((w) => w.transliteration);
+      return {
+        title: "🔤 Prononciation",
+        question: "Comment se prononce ce mot ?",
+        display: word.arabic,
+        displayType: "arabic",
+        correct,
+        options: shuffle([correct, ...wrongs]),
+      };
+    }
+    case "C": {
+      // Sens → Mot arabe (inversé)
+      const correct = word.arabic;
+      const wrongs = WORDS.filter((w) => w.id !== word.id)
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 3)
+        .map((w) => w.arabic);
+      return {
+        title: "📖 Retrouve le mot",
+        question: `Quel est le mot arabe pour "${word.meaning}" ?`,
+        display: word.meaning,
+        displayType: "text",
+        correct,
+        options: shuffle([correct, ...wrongs]),
+        arabicOptions: true,
+      };
+    }
+    case "D": {
+      // Verset à trous
+      const verseWithBlank = word.verseArabic.replace(word.arabic, "___");
+      const correct = word.arabic;
+      const wrongs = WORDS.filter((w) => w.id !== word.id)
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 3)
+        .map((w) => w.arabic);
+      return {
+        title: "📜 Complète le verset",
+        question: "Quel mot manque dans ce verset ?",
+        display: verseWithBlank,
+        displayType: "verse",
+        correct,
+        options: shuffle([correct, ...wrongs]),
+        arabicOptions: true,
+      };
+    }
+    case "E": {
+      // Rappel surprise — ancien mot
+      if (learnedWords.length === 0) {
+        return buildQuizData(word, "A"); // Fallback
+      }
+      const oldWord =
+        learnedWords[
+          Math.floor(Math.random() * Math.min(learnedWords.length, 10))
+        ];
+      const correct = oldWord.meaning;
+      const wrongs = getCloseWrongAnswers(oldWord, "meaning", 3);
+      return {
+        title: "🔄 Rappel surprise !",
+        question: "Tu te souviens de ce mot ?",
+        display: oldWord.arabic,
+        displayType: "arabic",
+        correct,
+        options: shuffle([correct, ...wrongs]),
+        isSurprise: true,
+        surpriseWord: oldWord,
+      };
+    }
+    default:
+      return buildQuizData(word, "A");
+  }
+}
+
+function getCloseWrongAnswers(word, field, count) {
+  // Trouver des mots de même catégorie pour des pièges plus subtils
+  const sameFreqRange = WORDS.filter(
+    (w) => w.id !== word.id && Math.abs(w.frequency - word.frequency) < 200,
+  );
+
+  const pool =
+    sameFreqRange.length >= count
+      ? sameFreqRange
+      : WORDS.filter((w) => w.id !== word.id);
+
+  return pool
+    .sort(() => Math.random() - 0.5)
+    .slice(0, count)
+    .map((w) => w[field]);
+}
+
+function shuffle(arr) {
+  return arr.sort(() => Math.random() - 0.5);
+}
+
 function renderQuizScreen() {
   state.mode = "quiz";
   const word = WORDS[state.currentWordIndex];
@@ -1024,38 +1186,60 @@ function renderQuizScreen() {
   const card = document.getElementById("mainWordCard");
   const quiz = document.getElementById("quizSection");
 
-  // Animer sortie card
+  // Choisir le type de quiz
+  const quizType = getQuizType(state.currentWordIndex);
+  const quizData = buildQuizData(word, quizType);
+
+  // Stocker pour handleLearnQuizAnswer
+  state.currentQuizData = quizData;
+  state.currentQuizType = quizType;
+
   slideOut(card, "left").then(() => {
     card.classList.add("hidden");
 
-    // Préparer quiz
-    document.getElementById("quizTitle").textContent = "🎯 As-tu retenu ?";
-    document.getElementById("quizQuestion").textContent =
-      "Quel est le sens de ce mot ?";
-    document.getElementById("quizArabic").textContent = word.arabic;
+    document.getElementById("quizTitle").textContent = quizData.title;
+    document.getElementById("quizQuestion").textContent = quizData.question;
     document.getElementById("quizFeedback").className = "quiz-feedback hidden";
 
-    const correct = word.meaning;
-    const wrongs = WRONG_ANSWERS.filter((w) => !correct.includes(w))
-      .sort(() => Math.random() - 0.5)
-      .slice(0, 3);
-    const options = [correct, ...wrongs].sort(() => Math.random() - 0.5);
+    // Afficher le contenu selon le type
+    const quizArabic = document.getElementById("quizArabic");
+    if (quizData.displayType === "arabic") {
+      quizArabic.style.fontFamily = "var(--font-ar)";
+      quizArabic.style.fontSize = "56px";
+      quizArabic.style.direction = "rtl";
+      quizArabic.textContent = quizData.display;
+    } else if (quizData.displayType === "text") {
+      quizArabic.style.fontFamily = "var(--font-fr)";
+      quizArabic.style.fontSize = "24px";
+      quizArabic.style.direction = "ltr";
+      quizArabic.textContent = quizData.display;
+    } else if (quizData.displayType === "verse") {
+      quizArabic.style.fontFamily = "var(--font-ar)";
+      quizArabic.style.fontSize = "22px";
+      quizArabic.style.direction = "rtl";
+      quizArabic.textContent = quizData.display;
+    }
 
+    // Construire les options
     const container = document.getElementById("quizOptions");
     container.innerHTML = "";
-    options.forEach((opt, i) => {
+    quizData.options.forEach((opt, i) => {
       const btn = document.createElement("button");
       btn.className = "quiz-option";
+      if (quizData.arabicOptions) {
+        btn.style.fontFamily = "var(--font-ar)";
+        btn.style.fontSize = "24px";
+        btn.style.direction = "rtl";
+        btn.style.textAlign = "right";
+      }
       btn.textContent = opt;
-      btn.style.animationDelay = `${i * 60}ms`;
       btn.style.animation = `bounceIn 0.4s cubic-bezier(0.34,1.2,0.64,1) ${i * 60}ms both`;
       btn.addEventListener("click", () =>
-        handleLearnQuizAnswer(btn, opt, correct, word.id),
+        handleLearnQuizAnswer(btn, opt, quizData.correct, word.id),
       );
       container.appendChild(btn);
     });
 
-    // Animer entrée quiz
     quiz.classList.remove("hidden");
     slideIn(quiz, "right");
 
