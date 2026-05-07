@@ -547,7 +547,7 @@ function renderDailyChallenge() {
   const old = document.getElementById("dailyChallenge");
   if (old) old.remove();
 
-  const { word, isCompleted } = getDailyChallenge();
+  const { word, isCompleted, difficulty } = getDailyChallenge();
   if (!word) return;
 
   const card = document.createElement("div");
