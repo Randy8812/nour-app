@@ -2631,3 +2631,30 @@ body.kid-mode .level-card {
   text-align: center;
   font-family: var(--font-fr);
 }
+
+/* Paywall compact pour petits écrans */
+@media (max-height: 750px) {
+  .paywall-inner {
+    gap: 12px !important;
+    padding: 20px 20px 32px !important;
+  }
+  .paywall-lock {
+    font-size: 44px !important;
+  }
+  .paywall-title {
+    font-size: 20px !important;
+  }
+  .paywall-features {
+    padding: 16px !important;
+    gap: 10px !important;
+  }
+  .price-main {
+    font-size: 36px !important;
+  }
+  .lifetime-amount {
+    font-size: 36px !important;
+  }
+  .lifetime-option {
+    padding: 14px !important;
+  }
+}
