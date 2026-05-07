@@ -2152,6 +2152,62 @@ function updateAuthBadge() {
   }
 }
 
+// Prononcer le mot seul
+function pronounceWord() {
+  const word = WORDS[state.currentWordIndex];
+  const btn = document.getElementById("pronounceBtn");
+  if (!btn) return;
+
+  if (window.pronounceAudio) {
+    window.pronounceAudio.pause();
+    window.pronounceAudio = null;
+    if (window.pronounceTimer) {
+      clearTimeout(window.pronounceTimer);
+      window.pronounceTimer = null;
+    }
+    btn.textContent = "🔈 Mot seul";
+    btn.style.opacity = "1";
+    return;
+  }
+
+  btn.textContent = "⏳ ...";
+  btn.style.opacity = "0.7";
+
+  const audio = new Audio(
+    `https://cdn.islamic.network/quran/audio/128/ar.alafasy/${word.verseNumber || 1}.mp3`,
+  );
+  window.pronounceAudio = audio;
+
+  audio.oncanplay = () => {
+    btn.textContent = "⏸ Stop";
+    btn.style.opacity = "1";
+    audio.play();
+    window.pronounceTimer = setTimeout(() => {
+      audio.pause();
+      window.pronounceAudio = null;
+      window.pronounceTimer = null;
+      btn.textContent = "🔈 Mot seul";
+      btn.style.opacity = "1";
+    }, 2500);
+  };
+
+  audio.onended = () => {
+    window.pronounceAudio = null;
+    if (window.pronounceTimer) {
+      clearTimeout(window.pronounceTimer);
+    }
+    btn.textContent = "🔈 Mot seul";
+    btn.style.opacity = "1";
+  };
+
+  audio.onerror = () => {
+    window.pronounceAudio = null;
+    btn.textContent = "🔈 Mot seul";
+    btn.style.opacity = "1";
+    showToast("Audio non disponible");
+  };
+}
+
 // ============================================
 // SAVE / LOAD
 // ============================================
