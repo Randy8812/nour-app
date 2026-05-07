@@ -694,6 +694,184 @@ function handleDailyAnswer(btn, selected, correct) {
 }
 
 // ============================================
+// RÉVISION INTENSIVE (Anki-style)
+// ============================================
+
+function getRepetitionsRequired() {
+  const level = localStorage.getItem("nour_user_level") || "beginner";
+  return { beginner: 3, intermediate: 2, advanced: 1 }[level] || 2;
+}
+
+function showIntensiveReview(wordId) {
+  const word = WORDS.find((w) => w.id === wordId);
+  if (!word) return;
+
+  const required = getRepetitionsRequired();
+  let current = 0;
+
+  const overlay = document.createElement("div");
+  overlay.id = "intensiveReview";
+  overlay.style.cssText = `
+    position:fixed; inset:0; background:rgba(0,0,0,0.9);
+    display:flex; align-items:flex-end; justify-content:center;
+    z-index:400; backdrop-filter:blur(8px);
+    animation:fadeIn 0.3s ease;
+  `;
+
+  function renderRound() {
+    const correct = word.meaning;
+    const wrongs = getCloseWrongAnswers(word, "meaning", 3);
+    const options = shuffle([correct, ...wrongs]);
+    const userLevel = localStorage.getItem("nour_user_level") || "beginner";
+    const showPhonetic = userLevel === "beginner";
+
+    overlay.innerHTML = `
+      <div style="
+        background:linear-gradient(180deg,#142b1f,#091510);
+        border-radius:24px 24px 0 0; padding:24px 24px 44px;
+        width:100%; max-width:480px;
+        border-top:3px solid #1db974;
+        box-shadow:0 -20px 60px rgba(0,0,0,0.6);
+        animation:slideUp 0.35s cubic-bezier(0.34,1.2,0.64,1);
+        display:flex; flex-direction:column; gap:16px;
+      ">
+        <!-- Header -->
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <h3 style="font-size:16px;font-weight:800;color:#f5f0e8;font-family:Outfit,sans-serif;">🔁 Révision intensive</h3>
+          <button onclick="document.getElementById('intensiveReview').remove()" 
+            style="background:none;border:none;color:rgba(245,240,232,0.4);font-size:20px;cursor:pointer;">✕</button>
+        </div>
+
+        <!-- Progression -->
+        <div style="display:flex;gap:6px;">
+          ${Array.from(
+            { length: required },
+            (_, i) => `
+            <div style="flex:1;height:6px;border-radius:99px;
+              background:${i < current ? "linear-gradient(90deg,#1db974,#26d984)" : "rgba(245,240,232,0.1)"};
+              box-shadow:${i < current ? "0 0 8px rgba(29,185,116,0.4)" : "none"};
+              transition:all 0.3s ease;">
+            </div>
+          `,
+          ).join("")}
+        </div>
+        <div style="font-size:12px;color:rgba(245,240,232,0.4);font-family:Outfit,sans-serif;text-align:center;">
+          ${current}/${required} répétitions
+        </div>
+
+        <!-- Mot -->
+        <div style="text-align:center;background:rgba(5,14,10,0.6);border-radius:16px;padding:20px;border:1px solid rgba(212,168,67,0.15);">
+          <div style="font-family:Amiri,serif;font-size:72px;color:#d4a843;filter:drop-shadow(0 0 20px rgba(212,168,67,0.3));">
+            ${word.arabic}
+          </div>
+          ${showPhonetic ? `<div style="font-size:16px;color:#1db974;font-style:italic;font-family:Outfit,sans-serif;margin-top:4px;">${word.transliteration}</div>` : ""}
+        </div>
+
+        <!-- Question -->
+        <div style="font-size:15px;color:rgba(245,240,232,0.6);font-family:Outfit,sans-serif;text-align:center;">
+          Que signifie ce mot ?
+        </div>
+
+        <!-- Options -->
+        <div style="display:flex;flex-direction:column;gap:10px;" id="intensiveOptions">
+          ${options
+            .map(
+              (opt) => `
+            <button onclick="handleIntensiveAnswer(this, '${opt.replace(/'/g, "\'")}', '${correct.replace(/'/g, "\'")}')" 
+              style="background:rgba(245,240,232,0.05);border:1px solid rgba(245,240,232,0.1);
+              border-radius:14px;padding:15px 18px;font-size:15px;color:#f5f0e8;
+              font-family:Outfit,sans-serif;font-weight:500;cursor:pointer;text-align:left;
+              transition:all 0.15s;">${opt}</button>
+          `,
+            )
+            .join("")}
+        </div>
+
+        <div id="intensiveFeedback" style="display:none;padding:12px;border-radius:12px;text-align:center;font-weight:700;font-family:Outfit,sans-serif;font-size:14px;"></div>
+      </div>
+    `;
+  }
+
+  window._intensiveState = {
+    word,
+    current,
+    required,
+    renderRound,
+    overlay,
+    wordId,
+  };
+
+  renderRound();
+  document.body.appendChild(overlay);
+}
+
+function handleIntensiveAnswer(btn, selected, correct) {
+  const s = window._intensiveState;
+  if (!s) return;
+
+  document
+    .querySelectorAll("#intensiveOptions button")
+    .forEach((b) => (b.style.pointerEvents = "none"));
+  const feedback = document.getElementById("intensiveFeedback");
+
+  if (selected === correct) {
+    btn.style.background = "rgba(34,197,94,0.15)";
+    btn.style.borderColor = "#22c55e";
+    btn.style.color = "#22c55e";
+    s.current++;
+    window._intensiveState.current = s.current;
+    playSound("correct");
+    haptic([50]);
+
+    if (s.current >= s.required) {
+      // Terminé !
+      feedback.textContent = `🎉 Parfait ! Tu as répété ${s.required}x — mot bien mémorisé !`;
+      feedback.style.cssText =
+        "display:block;background:rgba(34,197,94,0.1);color:#22c55e;border:1px solid rgba(34,197,94,0.3);border-radius:12px;";
+      state.xp += s.required * 3;
+      showXPAnimation(`+${s.required * 3} XP`);
+      updateWordSRS(s.wordId, true);
+      saveState();
+      updateUI();
+      playSound("milestone");
+      setTimeout(() => {
+        document.getElementById("intensiveReview")?.remove();
+        showToast("✅ Mot bien mémorisé !");
+      }, 1500);
+    } else {
+      feedback.textContent = `✅ ${s.current}/${s.required} — Continue !`;
+      feedback.style.cssText =
+        "display:block;background:rgba(34,197,94,0.1);color:#22c55e;border:1px solid rgba(34,197,94,0.3);border-radius:12px;";
+      setTimeout(() => {
+        s.renderRound();
+      }, 800);
+    }
+  } else {
+    btn.style.background = "rgba(239,68,68,0.1)";
+    btn.style.borderColor = "#ef4444";
+    btn.style.color = "#ef4444";
+    document.querySelectorAll("#intensiveOptions button").forEach((b) => {
+      if (b.textContent === correct) {
+        b.style.background = "rgba(34,197,94,0.1)";
+        b.style.borderColor = "#22c55e";
+        b.style.color = "#22c55e";
+      }
+    });
+    // Réinitialiser le compteur
+    s.current = 0;
+    window._intensiveState.current = 0;
+    feedback.textContent = `❌ Recommence depuis le début !`;
+    feedback.style.cssText =
+      "display:block;background:rgba(239,68,68,0.1);color:#ef4444;border:1px solid rgba(239,68,68,0.3);border-radius:12px;";
+    playSound("wrong");
+    haptic([100, 50, 100]);
+    setTimeout(() => {
+      s.renderRound();
+    }, 1200);
+  }
+}
+
+// ============================================
 // STATE
 // ============================================
 
@@ -1515,6 +1693,25 @@ function renderReviewGrid() {
       <button onclick="startSRSSession()">Réviser →</button>
     </div>`;
   }
+
+  // Bouton révision intensive
+  if (state.learnedWords.length > 0) {
+    html += `<div style="grid-column:1/-1;margin-bottom:4px;">
+      <button onclick="startIntensiveSession()" style="
+        width:100%;background:linear-gradient(145deg,#1a1a35,#20203f);
+        border:1px solid rgba(129,140,248,0.3);border-radius:var(--radius);
+        padding:14px 20px;display:flex;align-items:center;gap:12px;cursor:pointer;
+        transition:all 0.2s;box-shadow:0 4px 16px rgba(0,0,0,0.3);
+      ">
+        <span style="font-size:24px;">🔁</span>
+        <div style="text-align:left;flex:1;">
+          <div style="font-size:14px;font-weight:700;color:#f5f0e8;font-family:Outfit,sans-serif;">Révision intensive</div>
+          <div style="font-size:12px;color:rgba(245,240,232,0.4);font-family:Outfit,sans-serif;margin-top:2px;">Répéter ${getRepetitionsRequired()}x de suite pour mémoriser</div>
+        </div>
+        <span style="color:#818cf8;font-size:18px;">→</span>
+      </button>
+    </div>`;
+  }
   const userLevel = localStorage.getItem("nour_user_level") || "beginner";
   const showPhonetic = userLevel === "beginner";
   const showMeaning = userLevel !== "advanced";
@@ -1527,7 +1724,7 @@ function renderReviewGrid() {
       const stars = "⭐".repeat(level);
       const needsReview = toReview.includes(id);
       return `
-      <div class="review-card ${needsReview ? "needs-review" : ""} ${userLevel === "beginner" ? "review-card-beginner" : ""}" onclick="showWordDetail(${w.id})">
+      <div class="review-card ${needsReview ? "needs-review" : ""} ${userLevel === "beginner" ? "review-card-beginner" : ""}" onclick="showWordDetail(${w.id})" oncontextmenu="startIntensiveForWord(${w.id}, event); return false;">
         <div class="review-arabic">${w.arabic}</div>
         ${showPhonetic ? `<div class="review-phonetic">${w.transliteration}</div>` : ""}
         ${showMeaning ? `<div class="review-meaning">${w.meaning}</div>` : ""}
@@ -1537,6 +1734,23 @@ function renderReviewGrid() {
     })
     .join("");
   container.innerHTML = html;
+}
+
+function startIntensiveSession() {
+  if (!state.learnedWords.length) {
+    showToast("Apprends d'abord quelques mots !");
+    return;
+  }
+  // Choisir un mot aléatoire parmi les appris
+  const randomId =
+    state.learnedWords[Math.floor(Math.random() * state.learnedWords.length)];
+  showIntensiveReview(randomId);
+}
+
+// Depuis la review card — clic long
+function startIntensiveForWord(wordId, event) {
+  event.stopPropagation();
+  showIntensiveReview(wordId);
 }
 
 function updateReviewBadge() {
