@@ -1,294 +1,388 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr" dir="ltr">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <meta name="theme-color" content="#0a0f1e" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="description" content="Comprends le Coran mot par mot" />
-  <title>Nour — Arabe Coranique</title>
-  <link rel="manifest" href="manifest.json" />
-  <link rel="apple-touch-icon" href="img/icon-192.png" />
-  <meta name="apple-mobile-web-app-title" content="Nour" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <meta name="theme-color" content="#0a0f1e" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="description" content="Comprends le Coran mot par mot" />
+    <title>Nour — Arabe Coranique</title>
+    <link rel="manifest" href="manifest.json" />
+    <link rel="apple-touch-icon" href="img/icon-192.png" />
+    <meta name="apple-mobile-web-app-title" content="Nour" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
 
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/style.css" />
-</head>
-<body>
-
-  <!-- SPLASH -->
-  <div id="splash" class="splash">
-    <div class="splash-inner">
-      <div class="splash-logo">
-        <div class="logo-circle"><span class="logo-arabic">ن</span></div>
-        <h1 class="logo-name">Nour</h1>
-        <p class="logo-tagline">نور — Lumière sur le Coran</p>
-      </div>
-      <div class="splash-loader">
-        <div class="loader-bar"><div class="loader-fill"></div></div>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <!-- SPLASH -->
+    <div id="splash" class="splash">
+      <div class="splash-inner">
+        <div class="splash-logo">
+          <div class="logo-circle"><span class="logo-arabic">ن</span></div>
+          <h1 class="logo-name">Nour</h1>
+          <p class="logo-tagline">نور — Lumière sur le Coran</p>
+        </div>
+        <div class="splash-loader">
+          <div class="loader-bar"><div class="loader-fill"></div></div>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- ONBOARDING -->
-  <div id="onboarding" class="screen hidden">
-    <div class="onboarding-slides">
-      <div class="slide active" data-slide="0">
-        <div class="slide-visual">
-          <div class="big-arabic">بِسْمِ اللَّهِ</div>
-          <div class="slide-glow"></div>
-        </div>
-        <div class="slide-content">
-          <h2>Tu récites depuis des années</h2>
-          <p>Mais comprends-tu vraiment ce que tu dis à Allah ?</p>
-        </div>
-      </div>
-      <div class="slide" data-slide="1">
-        <div class="slide-visual">
-          <div class="stat-display">
-            <span class="stat-number">200</span>
-            <span class="stat-label">mots coraniques</span>
+    <!-- ONBOARDING -->
+    <div id="onboarding" class="screen hidden">
+      <div class="onboarding-slides">
+        <div class="slide active" data-slide="0">
+          <div class="slide-visual">
+            <div class="big-arabic">بِسْمِ اللَّهِ</div>
+            <div class="slide-glow"></div>
           </div>
-          <div class="stat-sub">= 70% du texte du Coran</div>
-        </div>
-        <div class="slide-content">
-          <h2>200 mots suffisent</h2>
-          <p>Apprends les mots les plus fréquents et le Coran s'ouvre à toi.</p>
-        </div>
-      </div>
-      <div class="slide" data-slide="2">
-        <div class="slide-visual">
-          <div class="features-grid">
-            <div class="feat"><span>🎧</span><small>Écoute</small></div>
-            <div class="feat"><span>✨</span><small>Comprends</small></div>
-            <div class="feat"><span>🔥</span><small>Streak</small></div>
-            <div class="feat"><span>📈</span><small>Progresse</small></div>
+          <div class="slide-content">
+            <h2>Tu récites depuis des années</h2>
+            <p>Mais comprends-tu vraiment ce que tu dis à Allah ?</p>
           </div>
         </div>
-        <div class="slide-content">
-          <h2>5 minutes par jour</h2>
-          <p>Pour toute la famille. Enfants, ados, adultes — chacun à son rythme.</p>
-        </div>
-      </div>
-    </div>
-    <div class="onboarding-nav">
-      <div class="dots">
-        <span class="dot active"></span>
-        <span class="dot"></span>
-        <span class="dot"></span>
-      </div>
-      <button class="btn-primary" id="onboardingNext">Continuer</button>
-    </div>
-  </div>
-
-  <!-- EMAIL CAPTURE -->
-  <div id="emailScreen" class="screen hidden">
-    <div class="email-inner">
-      <div class="email-top">
-        <div class="email-icon">📩</div>
-        <h2 class="email-title">Sauvegarde ta progression</h2>
-        <p class="email-sub">Entre ton email pour ne jamais perdre tes mots appris et ton streak.</p>
-      </div>
-      <div class="email-form">
-        <input type="email" class="email-input" id="emailInput" placeholder="ton@email.com" />
-        <div class="email-error hidden" id="emailError">Entre un email valide</div>
-        <button class="btn-primary" id="emailSubmitBtn">Sauvegarder et continuer</button>
-        <button class="email-skip" id="emailSkipBtn">Passer cette étape</button>
-      </div>
-      <div class="email-trust">
-        <span>🔒 Aucun spam. Juste tes données sauvegardées.</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- PAYWALL -->
-  <div id="paywallScreen" class="screen hidden">
-    <div class="paywall-inner">
-      <div class="paywall-top">
-        <div class="paywall-lock">🔒</div>
-        <h2 class="paywall-title">Continue ton voyage</h2>
-        <p class="paywall-sub">Tu as découvert les 5 premiers mots gratuitement.<br>Débloque les <strong>200 mots coraniques</strong> complets.</p>
-      </div>
-      <div class="paywall-features">
-        <div class="paywall-feat"><span class="feat-check">✓</span><span>200 mots coraniques + versets</span></div>
-        <div class="paywall-feat"><span class="feat-check">✓</span><span>Audio récitation complète</span></div>
-        <div class="paywall-feat"><span class="feat-check">✓</span><span>4 profils famille</span></div>
-        <div class="paywall-feat"><span class="feat-check">✓</span><span>Quiz illimités + progression</span></div>
-        <div class="paywall-feat"><span class="feat-check">✓</span><span>Streaks et badges exclusifs</span></div>
-      </div>
-      <div class="paywall-price">
-        <div class="price-main">4,99€<span class="price-period">/mois</span></div>
-        <div class="price-sub">Moins d'un café par mois</div>
-      </div>
-      <button class="btn-primary paywall-cta" id="paywallCTA">Commencer Premium 🚀</button>
-      <button class="paywall-back" id="paywallBack">Rester sur les mots gratuits</button>
-    </div>
-  </div>
-
-  <!-- PROFILS -->
-  <div id="profiles" class="screen hidden">
-    <div class="profiles-header">
-      <div class="logo-circle small"><span class="logo-arabic">ن</span></div>
-      <h1 class="profiles-title">Qui apprend aujourd'hui ?</h1>
-    </div>
-    <div class="profiles-grid" id="profilesGrid"></div>
-    <button class="btn-add-profile" id="addProfileBtn">+ Ajouter un profil</button>
-    <div class="modal-overlay hidden" id="addProfileModal">
-      <div class="modal-box">
-        <h3>Nouveau profil</h3>
-        <div class="avatar-picker" id="avatarPicker">
-          <span class="avatar-opt active" data-avatar="🧑">🧑</span>
-          <span class="avatar-opt" data-avatar="👦">👦</span>
-          <span class="avatar-opt" data-avatar="👧">👧</span>
-          <span class="avatar-opt" data-avatar="👨">👨</span>
-          <span class="avatar-opt" data-avatar="👩">👩</span>
-          <span class="avatar-opt" data-avatar="🧒">🧒</span>
-          <span class="avatar-opt" data-avatar="👴">👴</span>
-          <span class="avatar-opt" data-avatar="👵">👵</span>
-        </div>
-        <input type="text" class="profile-name-input" id="profileNameInput" placeholder="Prénom..." maxlength="12" />
-
-        <div class="kid-toggle-row">
-          <span class="kid-toggle-label">👶 Profil enfant</span>
-          <label class="toggle-switch">
-            <input type="checkbox" id="isKidToggle">
-            <span class="toggle-slider"></span>
-          </label>
-        </div>
-
-        <div class="modal-actions">
-          <button class="btn-secondary" id="cancelProfileBtn">Annuler</button>
-          <button class="btn-primary small" id="saveProfileBtn">Créer</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- MAIN APP -->
-  <div id="app" class="screen hidden">
-
-    <header class="app-header">
-      <div class="header-left">
-        <div class="streak-badge">
-          <span class="streak-fire">🔥</span>
-          <span class="streak-count" id="streakCount">0</span>
-        </div>
-      </div>
-      <div class="header-center">
-        <span class="header-logo" title="Changer de profil">ن Nour</span>
-        <span class="premium-badge hidden" id="premiumBadge">⭐ Premium</span>
-      </div>
-      <div class="header-right">
-        <div class="xp-badge">
-          <span class="xp-icon">⭐</span>
-          <span class="xp-count" id="xpCount">0</span>
-        </div>
-      </div>
-    </header>
-
-    <div class="global-progress">
-      <div class="progress-track">
-        <div class="progress-fill" id="globalProgress" style="width:0%"></div>
-      </div>
-      <span class="progress-label" id="progressLabel">0 / 200 mots</span>
-    </div>
-
-    <nav class="tab-nav">
-      <button class="tab-btn active" data-tab="learn"><span class="tab-icon">📖</span><span>Apprendre</span></button>
-      <button class="tab-btn" data-tab="review"><span class="tab-icon">🔄</span><span>Réviser</span><span class="tab-badge hidden" id="reviewTabBadge">0</span></button>
-      <button class="tab-btn" data-tab="progress"><span class="tab-icon">📊</span><span>Progrès</span></button>
-    </nav>
-
-    <main class="tab-content">
-
-      <section id="tab-learn" class="tab-panel active">
-        <div class="section-header">
-          <h2>Leçon du jour</h2>
-          <span class="lesson-badge" id="lessonBadge">Mot 1</span>
-        </div>
-        <div class="word-card" id="mainWordCard">
-          <div class="card-inner">
-            <div class="card-arabic" id="cardArabic">الله</div>
-            <div class="card-transliteration" id="cardTranslit">Allāh</div>
-            <div class="card-divider"></div>
-            <div class="card-meaning" id="cardMeaning">Allah — Dieu</div>
-            <div class="card-verse" id="cardVerse">
-              <div class="verse-arabic" id="verseArabic"></div>
-              <div class="verse-fr" id="verseFr"></div>
-              <div class="verse-ref" id="verseRef"></div>
+        <div class="slide" data-slide="1">
+          <div class="slide-visual">
+            <div class="stat-display">
+              <span class="stat-number">200</span>
+              <span class="stat-label">mots coraniques</span>
             </div>
-            <button class="audio-btn" id="audioBtn" onclick="playAudio()">
-              <span>🔊</span> Écouter
-            </button>
+            <div class="stat-sub">= 70% du texte du Coran</div>
+          </div>
+          <div class="slide-content">
+            <h2>200 mots suffisent</h2>
+            <p>
+              Apprends les mots les plus fréquents et le Coran s'ouvre à toi.
+            </p>
           </div>
         </div>
-        <div class="lesson-actions">
-          <button class="btn-secondary" id="prevWord">← Précédent</button>
-          <button class="btn-primary" id="nextWord">Suivant →</button>
-        </div>
-        <div class="quiz-section hidden" id="quizSection">
-          <h3 class="quiz-title" id="quizTitle">Quiz rapide</h3>
-          <p class="quiz-question" id="quizQuestion">Que signifie ce mot ?</p>
-          <div class="quiz-arabic" id="quizArabic"></div>
-          <div class="quiz-options" id="quizOptions"></div>
-          <div class="quiz-feedback hidden" id="quizFeedback"></div>
-        </div>
-      </section>
-
-      <section id="tab-review" class="tab-panel hidden">
-        <div class="section-header">
-          <h2>Révision</h2>
-          <span class="lesson-badge">Mots appris</span>
-        </div>
-        <div class="review-grid" id="reviewGrid">
-          <div class="empty-state">
-            <div class="empty-icon">📚</div>
-            <p>Apprends tes premiers mots pour les retrouver ici !</p>
-          </div>
-        </div>
-      </section>
-
-      <section id="tab-progress" class="tab-panel hidden">
-        <div class="section-header"><h2>Mes progrès</h2></div>
-        <div class="stats-grid">
-          <div class="stat-card"><div class="stat-value" id="statWords">0</div><div class="stat-name">Mots appris</div></div>
-          <div class="stat-card"><div class="stat-value" id="statStreak">0</div><div class="stat-name">Jours de suite</div></div>
-          <div class="stat-card"><div class="stat-value" id="statXP">0</div><div class="stat-name">Points XP</div></div>
-          <div class="stat-card"><div class="stat-value" id="statQuiz">0%</div><div class="stat-name">Quizzes réussis</div></div>
-        </div>
-        <div class="level-section">
-          <h3>Niveau actuel</h3>
-          <div class="level-card" id="levelCard">
-            <div class="level-icon">🌱</div>
-            <div class="level-info">
-              <div class="level-name" id="levelName">Débutant</div>
-              <div class="level-desc" id="levelDesc">Tu commences ton voyage</div>
+        <div class="slide" data-slide="2">
+          <div class="slide-visual">
+            <div class="features-grid">
+              <div class="feat"><span>🎧</span><small>Écoute</small></div>
+              <div class="feat"><span>✨</span><small>Comprends</small></div>
+              <div class="feat"><span>🔥</span><small>Streak</small></div>
+              <div class="feat"><span>📈</span><small>Progresse</small></div>
             </div>
           </div>
-        </div>
-        <div class="badges-section">
-          <h3>Badges</h3>
-          <div class="badges-grid" id="badgesGrid">
-            <div class="badge-item locked"><div class="badge-icon">🌟</div><div class="badge-name">Premier mot</div></div>
-            <div class="badge-item locked"><div class="badge-icon">🔥</div><div class="badge-name">7 jours</div></div>
-            <div class="badge-item locked"><div class="badge-icon">📖</div><div class="badge-name">10 mots</div></div>
-            <div class="badge-item locked"><div class="badge-icon">💎</div><div class="badge-name">50 mots</div></div>
+          <div class="slide-content">
+            <h2>5 minutes par jour</h2>
+            <p>
+              Pour toute la famille. Enfants, ados, adultes — chacun à son
+              rythme.
+            </p>
           </div>
         </div>
-      </section>
+      </div>
+      <div class="onboarding-nav">
+        <div class="dots">
+          <span class="dot active"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+        </div>
+        <button class="btn-primary" id="onboardingNext">Continuer</button>
+      </div>
+    </div>
 
-    </main>
-  </div>
+    <!-- EMAIL CAPTURE -->
+    <div id="emailScreen" class="screen hidden">
+      <div class="email-inner">
+        <div class="email-top">
+          <div class="email-icon">📩</div>
+          <h2 class="email-title">Sauvegarde ta progression</h2>
+          <p class="email-sub">
+            Entre ton email pour ne jamais perdre tes mots appris et ton streak.
+          </p>
+        </div>
+        <div class="email-form">
+          <input
+            type="email"
+            class="email-input"
+            id="emailInput"
+            placeholder="ton@email.com"
+          />
+          <div class="email-error hidden" id="emailError">
+            Entre un email valide
+          </div>
+          <button class="btn-primary" id="emailSubmitBtn">
+            Sauvegarder et continuer
+          </button>
+          <button class="email-skip" id="emailSkipBtn">
+            Passer cette étape
+          </button>
+        </div>
+        <div class="email-trust">
+          <span>🔒 Aucun spam. Juste tes données sauvegardées.</span>
+        </div>
+      </div>
+    </div>
 
-  <script src="js/data.js"></script>
-  <script src="js/notifications.js"></script>
-  <script src="js/share.js"></script>
-  <script src="js/auth.js"></script>
-  <script src="js/premium.js"></script>
-  <script src="js/app.js"></script>
-</body>
+    <!-- PAYWALL -->
+    <div id="paywallScreen" class="screen hidden">
+      <div class="paywall-inner">
+        <div class="paywall-top">
+          <div class="paywall-lock">🔒</div>
+          <h2 class="paywall-title">Continue ton voyage</h2>
+          <p class="paywall-sub">
+            Tu as découvert les 5 premiers mots gratuitement.<br />Débloque les
+            <strong>200 mots coraniques</strong> complets.
+          </p>
+        </div>
+        <div class="paywall-features">
+          <div class="paywall-feat">
+            <span class="feat-check">✓</span
+            ><span>200 mots coraniques + versets</span>
+          </div>
+          <div class="paywall-feat">
+            <span class="feat-check">✓</span
+            ><span>Audio récitation complète</span>
+          </div>
+          <div class="paywall-feat">
+            <span class="feat-check">✓</span><span>4 profils famille</span>
+          </div>
+          <div class="paywall-feat">
+            <span class="feat-check">✓</span
+            ><span>Quiz illimités + progression</span>
+          </div>
+          <div class="paywall-feat">
+            <span class="feat-check">✓</span
+            ><span>Streaks et badges exclusifs</span>
+          </div>
+        </div>
+        <div class="paywall-price">
+          <div class="price-main">
+            4,99€<span class="price-period">/mois</span>
+          </div>
+          <div class="price-sub">Moins d'un café par mois</div>
+        </div>
+        <button class="btn-primary paywall-cta" id="paywallCTA">
+          Commencer Premium 🚀
+        </button>
+        <button class="paywall-back" id="paywallBack">
+          Rester sur les mots gratuits
+        </button>
+      </div>
+    </div>
+
+    <!-- PROFILS -->
+    <div id="profiles" class="screen hidden">
+      <div class="profiles-header">
+        <div class="logo-circle small"><span class="logo-arabic">ن</span></div>
+        <h1 class="profiles-title">Qui apprend aujourd'hui ?</h1>
+      </div>
+      <div class="profiles-grid" id="profilesGrid"></div>
+      <button class="btn-add-profile" id="addProfileBtn">
+        + Ajouter un profil
+      </button>
+      <div class="modal-overlay hidden" id="addProfileModal">
+        <div class="modal-box">
+          <h3>Nouveau profil</h3>
+          <div class="avatar-picker" id="avatarPicker">
+            <span class="avatar-opt active" data-avatar="🧑">🧑</span>
+            <span class="avatar-opt" data-avatar="👦">👦</span>
+            <span class="avatar-opt" data-avatar="👧">👧</span>
+            <span class="avatar-opt" data-avatar="👨">👨</span>
+            <span class="avatar-opt" data-avatar="👩">👩</span>
+            <span class="avatar-opt" data-avatar="🧒">🧒</span>
+            <span class="avatar-opt" data-avatar="👴">👴</span>
+            <span class="avatar-opt" data-avatar="👵">👵</span>
+          </div>
+          <input
+            type="text"
+            class="profile-name-input"
+            id="profileNameInput"
+            placeholder="Prénom..."
+            maxlength="12"
+          />
+
+          <div class="kid-toggle-row">
+            <span class="kid-toggle-label">👶 Profil enfant</span>
+            <label class="toggle-switch">
+              <input type="checkbox" id="isKidToggle" />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <div class="modal-actions">
+            <button class="btn-secondary" id="cancelProfileBtn">Annuler</button>
+            <button class="btn-primary small" id="saveProfileBtn">Créer</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN APP -->
+    <div id="app" class="screen hidden">
+      <header class="app-header">
+        <div class="header-left">
+          <div class="streak-badge">
+            <span class="streak-fire">🔥</span>
+            <span class="streak-count" id="streakCount">0</span>
+          </div>
+        </div>
+        <div class="header-center">
+          <span class="header-logo" title="Changer de profil">ن Nour</span>
+          <span class="premium-badge hidden" id="premiumBadge">⭐ Premium</span>
+        </div>
+        <div class="header-right">
+          <div class="xp-badge">
+            <span class="xp-icon">⭐</span>
+            <span class="xp-count" id="xpCount">0</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="global-progress">
+        <div class="progress-track">
+          <div
+            class="progress-fill"
+            id="globalProgress"
+            style="width: 0%"
+          ></div>
+        </div>
+        <span class="progress-label" id="progressLabel">0 / 200 mots</span>
+      </div>
+
+      <nav class="tab-nav">
+        <button class="tab-btn active" data-tab="learn">
+          <span class="tab-icon">📖</span><span>Apprendre</span>
+        </button>
+        <button class="tab-btn" data-tab="review">
+          <span class="tab-icon">🔄</span><span>Réviser</span
+          ><span class="tab-badge hidden" id="reviewTabBadge">0</span>
+        </button>
+        <button class="tab-btn" data-tab="progress">
+          <span class="tab-icon">📊</span><span>Progrès</span>
+        </button>
+      </nav>
+
+      <main class="tab-content">
+        <section id="tab-learn" class="tab-panel active">
+          <div class="section-header">
+            <h2>Leçon du jour</h2>
+            <span class="lesson-badge" id="lessonBadge">Mot 1</span>
+          </div>
+          <div class="word-card" id="mainWordCard">
+            <div class="card-inner">
+              <div class="card-arabic" id="cardArabic">الله</div>
+              <div class="card-transliteration" id="cardTranslit">Allāh</div>
+              <div class="card-divider"></div>
+              <div class="card-meaning" id="cardMeaning">Allah — Dieu</div>
+              <div class="card-verse" id="cardVerse">
+                <div class="verse-arabic" id="verseArabic"></div>
+                <div class="verse-fr" id="verseFr"></div>
+                <div class="verse-ref" id="verseRef"></div>
+              </div>
+              <button class="audio-btn" id="audioBtn" onclick="playAudio()">
+                <span>🔊</span> Écouter
+              </button>
+            </div>
+          </div>
+          <div class="lesson-actions">
+            <button class="btn-secondary" id="prevWord">← Précédent</button>
+            <button class="btn-primary" id="nextWord">Suivant →</button>
+          </div>
+          <div class="quiz-section hidden" id="quizSection">
+            <h3 class="quiz-title" id="quizTitle">Quiz rapide</h3>
+            <p class="quiz-question" id="quizQuestion">Que signifie ce mot ?</p>
+            <div class="quiz-arabic" id="quizArabic"></div>
+            <div class="quiz-options" id="quizOptions"></div>
+            <div class="quiz-feedback hidden" id="quizFeedback"></div>
+          </div>
+        </section>
+
+        <section id="tab-review" class="tab-panel hidden">
+          <div class="section-header">
+            <h2>Révision</h2>
+            <span class="lesson-badge">Mots appris</span>
+          </div>
+          <div class="review-grid" id="reviewGrid">
+            <div class="empty-state">
+              <div class="empty-icon">📚</div>
+              <p>Apprends tes premiers mots pour les retrouver ici !</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="tab-progress" class="tab-panel hidden">
+          <div class="section-header"><h2>Mes progrès</h2></div>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-value" id="statWords">0</div>
+              <div class="stat-name">Mots appris</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="statStreak">0</div>
+              <div class="stat-name">Jours de suite</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="statXP">0</div>
+              <div class="stat-name">Points XP</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="statQuiz">0%</div>
+              <div class="stat-name">Quizzes réussis</div>
+            </div>
+          </div>
+          <div class="level-section">
+            <h3>Niveau actuel</h3>
+            <div class="level-card" id="levelCard">
+              <div class="level-icon">🌱</div>
+              <div class="level-info">
+                <div class="level-name" id="levelName">Débutant</div>
+                <div class="level-desc" id="levelDesc">
+                  Tu commences ton voyage
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="badges-section">
+            <h3>Badges</h3>
+            <div class="badges-grid" id="badgesGrid">
+              <div class="badge-item locked">
+                <div class="badge-icon">🌟</div>
+                <div class="badge-name">Premier mot</div>
+              </div>
+              <div class="badge-item locked">
+                <div class="badge-icon">🔥</div>
+                <div class="badge-name">7 jours</div>
+              </div>
+              <div class="badge-item locked">
+                <div class="badge-icon">📖</div>
+                <div class="badge-name">10 mots</div>
+              </div>
+              <div class="badge-item locked">
+                <div class="badge-icon">💎</div>
+                <div class="badge-name">50 mots</div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="js/data.js"></script>
+    <script src="js/notifications.js"></script>
+    <script src="js/share.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/premium.js"></script>
+    <script src="js/app.js"></script>
+  </body>
 </html>

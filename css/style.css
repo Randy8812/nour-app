@@ -2517,3 +2517,33 @@ body.kid-mode .level-card {
   font-family: var(--font-fr);
   margin-bottom: 4px;
 }
+
+/* ============================================
+   BOUTONS AUDIO
+   ============================================ */
+.audio-buttons-row {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  justify-content: center;
+}
+
+.audio-buttons-row .audio-btn {
+  flex: 1;
+  justify-content: center;
+}
+
+.pronounce-btn {
+  background: linear-gradient(
+    145deg,
+    rgba(129, 140, 248, 0.12),
+    rgba(129, 140, 248, 0.06)
+  ) !important;
+  color: #818cf8 !important;
+  border-color: rgba(129, 140, 248, 0.35) !important;
+}
+
+.pronounce-btn:active {
+  background: #818cf8 !important;
+  color: #fff !important;
+}
