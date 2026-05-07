@@ -6,6 +6,7 @@ const SUPABASE_URL = "https://xlpdvsodgrdlpwuajzyr.supabase.co";
 const SUPABASE_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhscGR2c29kZ3JkbHB3dWFqenlyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MjkyMDcsImV4cCI6MjA5MzUwNTIwN30.RjVzdzv3daq84cTvUdwguFpNpSwXKPNL2iJf7KOLT7Q";
 const STRIPE_PAYMENT_LINK = "https://buy.stripe.com/eVq8wO85U5o7f2u7Ef2Ji00";
+const STRIPE_LIFETIME_LINK = "https://buy.stripe.com/9B628q71QeYH3jM5w72Ji02";
 const FREE_WORDS_LIMIT = 15;
 
 // ============================================
@@ -215,11 +216,26 @@ function startStripeCheckout() {
   window.location.href = url;
 }
 
+function startLifetimeCheckout() {
+  const email = localStorage.getItem("nour_user_email") || "";
+  const url = email
+    ? `${STRIPE_LIFETIME_LINK}?prefilled_email=${encodeURIComponent(email)}`
+    : STRIPE_LIFETIME_LINK;
+  window.location.href = url;
+}
+
 function checkStripeReturn() {
-  // Déléguer à premium.js
+  // Vérifier achat à vie
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("lifetime") === "true") {
+    localStorage.setItem("nour_premium", "true");
+    localStorage.setItem("nour_lifetime", "true");
+    window.history.replaceState({}, "", "/");
+    setTimeout(() => showToast("🎉 Accès à vie activé !"), 1000);
+    return;
+  }
+  // Déléguer à premium.js pour l'abonnement mensuel
   handleStripeReturn().catch(() => {
-    // Fallback
-    const params = new URLSearchParams(window.location.search);
     if (params.get("premium") === "true") {
       localStorage.setItem("nour_premium", "true");
       window.history.replaceState({}, "", "/");
