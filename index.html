@@ -166,43 +166,184 @@
             ><span>Streaks et badges exclusifs</span>
           </div>
         </div>
-        <!-- Option mensuelle -->
-        <div class="paywall-price">
-          <div class="price-main">
-            4,99<span class="price-period">€/mois</span>
-          </div>
-          <div class="price-sub">
-            Sans engagement · Résiliable à tout moment
-          </div>
-        </div>
-        <button class="btn-primary paywall-cta gold" id="paywallCTA">
-          Commencer l'abonnement ✨
-        </button>
-
-        <!-- Séparateur -->
-        <div class="paywall-or">
-          <span>ou</span>
-        </div>
-
-        <!-- Option à vie -->
-        <div class="lifetime-option">
-          <div class="lifetime-badge">⚡ Meilleure offre</div>
-          <div class="lifetime-price">
-            <span class="lifetime-amount">24,99€</span>
-            <span class="lifetime-label">accès à vie</span>
-          </div>
-          <div class="lifetime-sub">
-            Paiement unique · Économise plus de 35€/an
-          </div>
-          <button
-            onclick="startLifetimeCheckout()"
-            class="btn-primary paywall-cta"
-            style="margin-top: 10px"
+        <!-- Grille 2 options côte à côte -->
+        <div
+          style="
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            width: 100%;
+          "
+        >
+          <!-- Option mensuelle -->
+          <div
+            style="
+              background: linear-gradient(145deg, #142b1f, #1a3628);
+              border: 1px solid rgba(212, 168, 67, 0.3);
+              border-radius: 16px;
+              padding: 16px;
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              gap: 8px;
+              position: relative;
+              overflow: hidden;
+            "
           >
-            Acheter l'accès à vie 🏆
-          </button>
+            <div
+              style="
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 2px;
+                background: linear-gradient(90deg, #d4a843, #f0c860);
+              "
+            ></div>
+            <div
+              style="
+                font-size: 11px;
+                color: rgba(245, 240, 232, 0.5);
+                font-family: Outfit, sans-serif;
+                font-weight: 600;
+              "
+            >
+              MENSUEL
+            </div>
+            <div
+              style="
+                font-size: 28px;
+                font-weight: 800;
+                background: linear-gradient(135deg, #d4a843, #f0c860);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+                line-height: 1;
+              "
+            >
+              4,99€
+            </div>
+            <div
+              style="
+                font-size: 11px;
+                color: rgba(245, 240, 232, 0.4);
+                font-family: Outfit, sans-serif;
+              "
+            >
+              par mois
+            </div>
+            <button
+              id="paywallCTA"
+              style="
+                width: 100%;
+                background: linear-gradient(135deg, #d4a843, #f0c860);
+                color: #050e0a;
+                border: none;
+                border-radius: 99px;
+                padding: 10px;
+                font-size: 13px;
+                font-weight: 800;
+                font-family: Outfit, sans-serif;
+                cursor: pointer;
+                margin-top: 4px;
+              "
+            >
+              S'abonner
+            </button>
+          </div>
+
+          <!-- Option à vie -->
+          <div
+            style="
+              background: linear-gradient(145deg, #1a1a35, #20203f);
+              border: 1px solid rgba(129, 140, 248, 0.4);
+              border-radius: 16px;
+              padding: 16px;
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              gap: 8px;
+              position: relative;
+              overflow: hidden;
+              box-shadow: 0 0 20px rgba(129, 140, 248, 0.1);
+            "
+          >
+            <div
+              style="
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 2px;
+                background: linear-gradient(90deg, #818cf8, #c084fc);
+              "
+            ></div>
+            <div
+              style="
+                background: linear-gradient(135deg, #818cf8, #a78bfa);
+                color: #fff;
+                font-size: 10px;
+                font-weight: 800;
+                padding: 3px 10px;
+                border-radius: 99px;
+                font-family: Outfit, sans-serif;
+              "
+            >
+              ⚡ MEILLEUR
+            </div>
+            <div
+              style="
+                font-size: 28px;
+                font-weight: 800;
+                background: linear-gradient(135deg, #818cf8, #c084fc);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+                line-height: 1;
+              "
+            >
+              24,99€
+            </div>
+            <div
+              style="
+                font-size: 11px;
+                color: rgba(245, 240, 232, 0.4);
+                font-family: Outfit, sans-serif;
+              "
+            >
+              à vie
+            </div>
+            <button
+              onclick="startLifetimeCheckout()"
+              style="
+                width: 100%;
+                background: linear-gradient(135deg, #818cf8, #a78bfa);
+                color: #fff;
+                border: none;
+                border-radius: 99px;
+                padding: 10px;
+                font-size: 13px;
+                font-weight: 800;
+                font-family: Outfit, sans-serif;
+                cursor: pointer;
+                margin-top: 4px;
+              "
+            >
+              Acheter
+            </button>
+          </div>
         </div>
 
+        <div
+          style="
+            font-size: 11px;
+            color: rgba(245, 240, 232, 0.3);
+            text-align: center;
+            font-family: Outfit, sans-serif;
+          "
+        >
+          Paiement sécurisé par Stripe
+        </div>
         <button class="paywall-back" id="paywallBack">
           Continuer avec la version gratuite
         </button>
