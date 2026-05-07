@@ -166,17 +166,45 @@
             ><span>Streaks et badges exclusifs</span>
           </div>
         </div>
+        <!-- Option mensuelle -->
         <div class="paywall-price">
           <div class="price-main">
-            4,99€<span class="price-period">/mois</span>
+            4,99<span class="price-period">€/mois</span>
           </div>
-          <div class="price-sub">Moins d'un café par mois</div>
+          <div class="price-sub">
+            Sans engagement · Résiliable à tout moment
+          </div>
         </div>
-        <button class="btn-primary paywall-cta" id="paywallCTA">
-          Commencer Premium 🚀
+        <button class="btn-primary paywall-cta gold" id="paywallCTA">
+          Commencer l'abonnement ✨
         </button>
+
+        <!-- Séparateur -->
+        <div class="paywall-or">
+          <span>ou</span>
+        </div>
+
+        <!-- Option à vie -->
+        <div class="lifetime-option">
+          <div class="lifetime-badge">⚡ Meilleure offre</div>
+          <div class="lifetime-price">
+            <span class="lifetime-amount">24,99€</span>
+            <span class="lifetime-label">accès à vie</span>
+          </div>
+          <div class="lifetime-sub">
+            Paiement unique · Économise plus de 35€/an
+          </div>
+          <button
+            onclick="startLifetimeCheckout()"
+            class="btn-primary paywall-cta"
+            style="margin-top: 10px"
+          >
+            Acheter l'accès à vie 🏆
+          </button>
+        </div>
+
         <button class="paywall-back" id="paywallBack">
-          Rester sur les mots gratuits
+          Continuer avec la version gratuite
         </button>
       </div>
     </div>
