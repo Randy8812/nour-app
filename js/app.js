@@ -1416,6 +1416,10 @@ function renderSRSCard() {
     .slice(0, 3);
   const options = [correct, ...wrongs].sort(() => Math.random() - 0.5);
 
+  const userLevel = localStorage.getItem("nour_user_level") || "beginner";
+  const showTranslit = userLevel === "beginner";
+  const showHint = userLevel === "beginner";
+
   container.innerHTML = `
     <div class="srs-card" style="grid-column:1/-1">
       <div class="srs-header">
@@ -1423,7 +1427,8 @@ function renderSRSCard() {
         <span class="srs-stars">${stars}</span>
       </div>
       <div class="srs-arabic">${word.arabic}</div>
-      <div class="srs-translit">${word.transliteration}</div>
+      ${showTranslit ? `<div class="srs-translit">${word.transliteration}</div>` : ""}
+      ${showHint ? `<div class="srs-hint">💡 Racine : ${word.root}</div>` : ""}
       <div class="srs-question">Que signifie ce mot ?</div>
       <div class="srs-options" id="srsOptions">
         ${options.map((opt) => `<button class="quiz-option" onclick="handleSRSAnswer(this, '${opt.replace(/'/g, "\\'")}', '${correct.replace(/'/g, "\\'")}', ${word.id})">${opt}</button>`).join("")}
@@ -1510,6 +1515,10 @@ function renderReviewGrid() {
       <button onclick="startSRSSession()">Réviser →</button>
     </div>`;
   }
+  const userLevel = localStorage.getItem("nour_user_level") || "beginner";
+  const showPhonetic = userLevel === "beginner";
+  const showMeaning = userLevel !== "advanced";
+
   html += state.learnedWords
     .map((id) => {
       const w = WORDS.find((w) => w.id === id);
@@ -1518,9 +1527,10 @@ function renderReviewGrid() {
       const stars = "⭐".repeat(level);
       const needsReview = toReview.includes(id);
       return `
-      <div class="review-card ${needsReview ? "needs-review" : ""}" onclick="showWordDetail(${w.id})">
+      <div class="review-card ${needsReview ? "needs-review" : ""} ${userLevel === "beginner" ? "review-card-beginner" : ""}" onclick="showWordDetail(${w.id})">
         <div class="review-arabic">${w.arabic}</div>
-        <div class="review-meaning">${w.meaning}</div>
+        ${showPhonetic ? `<div class="review-phonetic">${w.transliteration}</div>` : ""}
+        ${showMeaning ? `<div class="review-meaning">${w.meaning}</div>` : ""}
         ${stars ? `<div class="review-stars">${stars}</div>` : ""}
         ${needsReview ? '<div class="review-due">À réviser</div>' : ""}
       </div>`;
