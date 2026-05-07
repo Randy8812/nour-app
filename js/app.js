@@ -490,19 +490,45 @@ function getKidMessage(type) {
 
 function getDailyChallenge() {
   const today = getTodayStr();
+  const level = localStorage.getItem("nour_user_level") || "beginner";
 
-  // Mot du jour basé sur la date (déterministe)
+  // Plages de mots selon difficulté
+  const ranges = {
+    beginner: { min: 0, max: 49 }, // Mots 1-50 (très fréquents)
+    intermediate: { min: 50, max: 129 }, // Mots 51-130
+    advanced: { min: 130, max: 199 }, // Mots 131-200
+  };
+  const range = ranges[level] || ranges.beginner;
+
+  // Mot du jour déterministe dans la plage du niveau
   const dayOfYear = Math.floor(
     (new Date() - new Date(new Date().getFullYear(), 0, 0)) / 86400000,
   );
-  const wordIndex = dayOfYear % WORDS.length;
+  const rangeSize = range.max - range.min + 1;
+  const wordIndex = range.min + (dayOfYear % rangeSize);
   const word = WORDS[wordIndex];
+
+  // Difficulté lisible
+  const difficultyLabels = {
+    beginner: "🟢 Facile",
+    intermediate: "🟡 Moyen",
+    advanced: "🔴 Difficile",
+  };
+  const difficulty = difficultyLabels[level] || "🟢 Facile";
 
   // Vérifier si déjà complété aujourd'hui
   const completedKey = `nour_daily_${currentProfile}_${today}`;
   const isCompleted = localStorage.getItem(completedKey) === "true";
 
-  return { word, wordIndex, isCompleted, completedKey, today };
+  return {
+    word,
+    wordIndex,
+    isCompleted,
+    completedKey,
+    today,
+    difficulty,
+    level,
+  };
 }
 
 function completeDailyChallenge() {
@@ -537,12 +563,13 @@ function renderDailyChallenge() {
   card.innerHTML = `
     <div style="position:absolute;top:0;left:0;right:0;height:3px;background:${isCompleted ? "linear-gradient(90deg,#1db974,#26d984)" : "linear-gradient(90deg,#d4a843,#f0c860)"};"></div>
     
+    <!-- Header avec difficulté -->
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
       <div style="display:flex;align-items:center;gap:8px;">
         <span style="font-size:22px;">🎯</span>
         <div>
           <div style="font-size:14px;font-weight:800;color:#f5f0e8;font-family:Outfit,sans-serif;">Défi du jour</div>
-          <div style="font-size:11px;color:rgba(245,240,232,0.4);font-family:Outfit,sans-serif;">Nouveau défi demain</div>
+          <div style="font-size:11px;color:rgba(245,240,232,0.4);font-family:Outfit,sans-serif;">${difficulty} · Nouveau demain</div>
         </div>
       </div>
       ${
@@ -552,31 +579,38 @@ function renderDailyChallenge() {
       }
     </div>
 
-    <div style="display:flex;align-items:center;gap:16px;background:rgba(5,14,10,0.5);border-radius:14px;padding:16px;">
-      <div style="font-family:Amiri,serif;font-size:52px;color:#d4a843;direction:rtl;filter:drop-shadow(0 0 12px rgba(212,168,67,0.3));">${word.arabic}</div>
-      <div style="flex:1;">
-        <div style="font-size:13px;color:rgba(29,185,116,0.8);font-style:italic;font-family:Outfit,sans-serif;margin-bottom:4px;">${word.transliteration}</div>
-        <div style="font-size:16px;font-weight:700;color:#f5f0e8;font-family:Outfit,sans-serif;">${word.meaning}</div>
-        <div style="font-size:11px;color:rgba(245,240,232,0.35);font-family:Outfit,sans-serif;margin-top:4px;">${word.verseRef}</div>
-      </div>
+    <!-- Mot arabe — toujours visible -->
+    <div style="text-align:center;background:rgba(5,14,10,0.6);border-radius:14px;padding:20px;border:1px solid rgba(212,168,67,0.15);">
+      <div style="font-family:Amiri,serif;font-size:72px;color:#d4a843;direction:rtl;filter:drop-shadow(0 0 16px rgba(212,168,67,0.3));">${word.arabic}</div>
+      <div style="font-size:15px;color:rgba(29,185,116,0.8);font-style:italic;font-family:Outfit,sans-serif;margin-top:6px;">${word.transliteration}</div>
+      <div style="font-size:11px;color:rgba(245,240,232,0.3);font-family:Outfit,sans-serif;margin-top:4px;">${word.verseRef}</div>
     </div>
 
+    <!-- Si complété : afficher la réponse et le tip -->
     ${
-      !isCompleted
+      isCompleted
         ? `
+      <div style="background:rgba(29,185,116,0.08);border:1px solid rgba(29,185,116,0.2);border-radius:12px;padding:14px;text-align:center;">
+        <div style="font-size:18px;font-weight:800;color:#f5f0e8;font-family:Outfit,sans-serif;">${word.meaning}</div>
+        <div style="font-size:12px;color:rgba(245,240,232,0.45);font-family:Outfit,sans-serif;margin-top:6px;">💡 ${word.tip}</div>
+      </div>
+    `
+        : `
+      <!-- Pas encore complété : cacher la réponse, afficher le bouton -->
+      <div style="background:rgba(212,168,67,0.05);border:1px dashed rgba(212,168,67,0.2);border-radius:12px;padding:14px;text-align:center;">
+        <div style="font-size:13px;color:rgba(245,240,232,0.4);font-family:Outfit,sans-serif;">
+          🔒 Connais-tu la signification de ce mot ?
+        </div>
+      </div>
       <button onclick="showDailyQuiz()" style="
-        width:100%; margin-top:14px;
+        width:100%;
         background:linear-gradient(135deg,#d4a843,#f0c860);
         color:#050e0a; border:none; border-radius:99px;
         padding:14px; font-size:15px; font-weight:800;
         font-family:Outfit,sans-serif; cursor:pointer;
         box-shadow:0 4px 20px rgba(212,168,67,0.4);
+        transition:transform 0.15s;
       ">Relever le défi 🎯</button>
-    `
-        : `
-      <div style="text-align:center;padding:10px;font-size:13px;color:rgba(29,185,116,0.7);font-family:Outfit,sans-serif;">
-        💡 ${word.tip}
-      </div>
     `
     }
   `;
@@ -590,7 +624,7 @@ function renderDailyChallenge() {
 }
 
 function showDailyQuiz() {
-  const { word } = getDailyChallenge();
+  const { word, difficulty } = getDailyChallenge();
   if (!word) return;
 
   const overlay = document.createElement("div");
@@ -618,7 +652,10 @@ function showDailyQuiz() {
       animation:slideUp 0.35s cubic-bezier(0.34,1.2,0.64,1);
     ">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
-        <h3 style="font-size:18px;font-weight:800;color:#f5f0e8;font-family:Outfit,sans-serif;">🎯 Défi du jour</h3>
+        <div>
+          <h3 style="font-size:18px;font-weight:800;color:#f5f0e8;font-family:Outfit,sans-serif;">🎯 Défi du jour</h3>
+          <div style="font-size:12px;color:rgba(245,240,232,0.4);font-family:Outfit,sans-serif;margin-top:2px;">${difficulty}</div>
+        </div>
         <button onclick="document.getElementById('dailyQuizOverlay').remove()" style="background:none;border:none;color:rgba(245,240,232,0.4);font-size:22px;cursor:pointer;">✕</button>
       </div>
 
