@@ -738,8 +738,14 @@ function showIntensiveReview(wordId) {
         <!-- Header -->
         <div style="display:flex;align-items:center;justify-content:space-between;">
           <h3 style="font-size:16px;font-weight:800;color:#f5f0e8;font-family:Outfit,sans-serif;">🔁 Révision intensive</h3>
-          <button onclick="document.getElementById('intensiveReview').remove()" 
-            style="background:none;border:none;color:rgba(245,240,232,0.4);font-size:20px;cursor:pointer;">✕</button>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <button onclick="changeIntensiveWord()" 
+              style="background:rgba(29,185,116,0.1);border:1px solid rgba(29,185,116,0.3);color:#1db974;
+              border-radius:99px;padding:6px 14px;font-size:12px;font-weight:700;
+              font-family:Outfit,sans-serif;cursor:pointer;">Autre mot →</button>
+            <button onclick="document.getElementById('intensiveReview').remove()" 
+              style="background:none;border:none;color:rgba(245,240,232,0.4);font-size:20px;cursor:pointer;">✕</button>
+          </div>
         </div>
 
         <!-- Progression -->
@@ -1741,9 +1747,19 @@ function startIntensiveSession() {
     showToast("Apprends d'abord quelques mots !");
     return;
   }
-  // Choisir un mot aléatoire parmi les appris
   const randomId =
     state.learnedWords[Math.floor(Math.random() * state.learnedWords.length)];
+  showIntensiveReview(randomId);
+}
+
+function changeIntensiveWord() {
+  // Choisir un autre mot aléatoire
+  if (!state.learnedWords.length) return;
+  const currentId = window._intensiveState?.wordId;
+  const others = state.learnedWords.filter((id) => id !== currentId);
+  const pool = others.length > 0 ? others : state.learnedWords;
+  const randomId = pool[Math.floor(Math.random() * pool.length)];
+  document.getElementById("intensiveReview")?.remove();
   showIntensiveReview(randomId);
 }
 
