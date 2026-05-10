@@ -31,21 +31,6 @@
     <link rel="stylesheet" href="css/style.css" />
   </head>
   <body>
-    <script>
-      // Désinscrire immédiatement tout Service Worker
-      if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.getRegistrations().then((regs) => {
-          regs.forEach((reg) => reg.unregister());
-        });
-        // Vider tous les caches
-        if ("caches" in window) {
-          caches
-            .keys()
-            .then((keys) => keys.forEach((key) => caches.delete(key)));
-        }
-      }
-    </script>
-
     <!-- SPLASH -->
     <div id="splash" class="splash">
       <div class="splash-inner">

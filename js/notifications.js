@@ -1,69 +1,85 @@
 // ============================================
-// NOUR — Système de notifications
+// NOUR — Notifications + Service Worker
 // ============================================
 
-// Enregistrer le Service Worker (désactivé temporairement)
+// Enregistrer le Service Worker
 async function registerServiceWorker() {
-  // Désinscrire tout SW existant pour éviter les problèmes de cache
-  if ("serviceWorker" in navigator) {
-    const regs = await navigator.serviceWorker.getRegistrations();
-    for (const reg of regs) {
-      await reg.unregister();
-    }
+  if (!("serviceWorker" in navigator)) return null;
+  try {
+    const reg = await navigator.serviceWorker.register("/sw.js", {
+      updateViaCache: "none",
+    });
+
+    // Vérifier les mises à jour toutes les 60 secondes
+    setInterval(() => reg.update(), 60000);
+
+    // Écouter les messages du SW
+    navigator.serviceWorker.addEventListener("message", (event) => {
+      if (event.data?.type === "SW_UPDATED") {
+        showUpdateBanner();
+      }
+    });
+
+    return reg;
+  } catch (e) {
+    console.log("SW non supporté:", e);
+    return null;
   }
-  return null;
 }
 
-// Demander la permission
+// Bannière de mise à jour
+function showUpdateBanner() {
+  if (document.getElementById("updateBanner")) return;
+
+  const banner = document.createElement("div");
+  banner.id = "updateBanner";
+  banner.style.cssText = `
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    background: linear-gradient(135deg, #1db974, #26d984);
+    color: #fff;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 9999;
+    box-shadow: 0 4px 20px rgba(29,185,116,0.4);
+    animation: slideDown 0.3s ease;
+    font-family: Outfit, sans-serif;
+  `;
+
+  banner.innerHTML = `
+    <span style="font-size:14px;font-weight:600;">🔄 Mise à jour disponible !</span>
+    <button onclick="applyUpdate()" style="
+      background: #fff;
+      color: #1db974;
+      border: none;
+      border-radius: 99px;
+      padding: 6px 16px;
+      font-size: 13px;
+      font-weight: 800;
+      font-family: Outfit, sans-serif;
+      cursor: pointer;
+    ">Mettre à jour</button>
+  `;
+
+  document.body.prepend(banner);
+}
+
+function applyUpdate() {
+  window.location.reload(true);
+}
+
+// Demander la permission de notification
 async function requestNotificationPermission() {
   if (!("Notification" in window)) return false;
   if (Notification.permission === "granted") return true;
   if (Notification.permission === "denied") return false;
-
   const permission = await Notification.requestPermission();
   return permission === "granted";
 }
 
-// Initialiser les notifications
-async function initNotifications() {
-  // Attendre un peu avant de demander (après le onboarding)
-  if (localStorage.getItem("nour_notif_asked")) return;
-
-  const reg = await registerServiceWorker();
-  if (!reg) return;
-
-  // Demander après 30 secondes d'utilisation
-  setTimeout(async () => {
-    const granted = await requestNotificationPermission();
-    localStorage.setItem("nour_notif_asked", "true");
-
-    if (granted) {
-      localStorage.setItem("nour_notif_enabled", "true");
-      scheduleNotifications(reg);
-      showToast("🔔 Notifications activées ! On te rappellera chaque jour.");
-    }
-  }, 30000);
-}
-
-// Programmer les notifications quotidiennes
-function scheduleNotifications(reg) {
-  if (!reg || !reg.active) return;
-  const streak = state?.streak || 0;
-  reg.active.postMessage({
-    type: "SCHEDULE_NOTIFICATION",
-    streak: streak,
-    hour: 18, // 18h00 chaque jour
-  });
-}
-
-// Réactiver les notifications au retour dans l'app
-async function reactivateNotifications() {
-  if (!localStorage.getItem("nour_notif_enabled")) return;
-  const reg = await navigator.serviceWorker?.ready;
-  if (reg) scheduleNotifications(reg);
-}
-
-// Afficher la bannière de notification manuelle
+// Bannière notification
 function showNotificationBanner() {
   if (localStorage.getItem("nour_notif_asked")) return;
   if (!("Notification" in window)) return;
@@ -73,9 +89,7 @@ function showNotificationBanner() {
   banner.id = "notifBanner";
   banner.style.cssText = `
     position: fixed;
-    bottom: 20px;
-    left: 16px;
-    right: 16px;
+    bottom: 20px; left: 16px; right: 16px;
     background: linear-gradient(135deg, #142b1f, #1a3628);
     border: 1px solid rgba(29,185,116,0.3);
     border-radius: 16px;
@@ -91,16 +105,14 @@ function showNotificationBanner() {
   banner.innerHTML = `
     <span style="font-size:28px">🔔</span>
     <div style="flex:1">
-      <div style="font-weight:700;font-size:14px;color:#f5f0e8">Rappels quotidiens</div>
-      <div style="font-size:12px;color:rgba(245,240,232,0.55);margin-top:2px">Ne brise jamais ton streak</div>
+      <div style="font-weight:700;font-size:14px;color:#f5f0e8;font-family:Outfit,sans-serif;">Rappels quotidiens</div>
+      <div style="font-size:12px;color:rgba(245,240,232,0.55);margin-top:2px;font-family:Outfit,sans-serif;">Ne brise jamais ton streak</div>
     </div>
     <button onclick="enableNotifications()" style="background:linear-gradient(135deg,#1db974,#26d984);color:#fff;border:none;border-radius:99px;padding:8px 16px;font-size:13px;font-weight:700;font-family:Outfit,sans-serif;cursor:pointer">Activer</button>
     <button onclick="dismissNotificationBanner()" style="background:none;border:none;color:rgba(245,240,232,0.4);font-size:20px;cursor:pointer;padding:0 4px">✕</button>
   `;
 
   document.body.appendChild(banner);
-
-  // Fermer automatiquement après 8 secondes
   setTimeout(() => dismissNotificationBanner(), 8000);
 }
 
@@ -110,13 +122,7 @@ async function enableNotifications() {
   localStorage.setItem("nour_notif_asked", "true");
   if (granted) {
     localStorage.setItem("nour_notif_enabled", "true");
-    const reg = await navigator.serviceWorker?.ready;
-    if (reg) scheduleNotifications(reg);
-    showToast("🔔 Rappels activés chaque jour à 18h !");
-  } else {
-    showToast(
-      "Notifications refusées — tu peux les activer dans les paramètres",
-    );
+    showToast("🔔 Rappels activés !");
   }
 }
 
@@ -126,7 +132,7 @@ function dismissNotificationBanner() {
   localStorage.setItem("nour_notif_asked", "true");
 }
 
-// Lancer au démarrage de l'app
+// Init au démarrage
 document.addEventListener("DOMContentLoaded", async () => {
   await registerServiceWorker();
 });
