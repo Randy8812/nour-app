@@ -2664,3 +2664,19 @@ body.kid-mode .level-card {
   font-size: 16px;
   line-height: 1;
 }
+
+/* Lien téléchargement dans paywall */
+.download-app-link {
+  display: block;
+  text-align: center;
+  font-size: 13px;
+  color: var(--em-light);
+  text-decoration: none;
+  padding: 6px;
+  font-family: var(--font-fr);
+  font-weight: 600;
+  opacity: 0.8;
+}
+.download-app-link:hover {
+  opacity: 1;
+}
