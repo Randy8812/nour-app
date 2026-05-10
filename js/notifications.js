@@ -2,33 +2,32 @@
 // NOUR — Système de notifications
 // ============================================
 
-// Enregistrer le Service Worker
+// Enregistrer le Service Worker (désactivé temporairement)
 async function registerServiceWorker() {
-  if (!('serviceWorker' in navigator)) return null;
-  try {
-    const reg = await navigator.serviceWorker.register('/sw.js');
-    console.log('Service Worker enregistré');
-    return reg;
-  } catch(e) {
-    console.log('SW non supporté:', e);
-    return null;
+  // Désinscrire tout SW existant pour éviter les problèmes de cache
+  if ("serviceWorker" in navigator) {
+    const regs = await navigator.serviceWorker.getRegistrations();
+    for (const reg of regs) {
+      await reg.unregister();
+    }
   }
+  return null;
 }
 
 // Demander la permission
 async function requestNotificationPermission() {
-  if (!('Notification' in window)) return false;
-  if (Notification.permission === 'granted') return true;
-  if (Notification.permission === 'denied') return false;
+  if (!("Notification" in window)) return false;
+  if (Notification.permission === "granted") return true;
+  if (Notification.permission === "denied") return false;
 
   const permission = await Notification.requestPermission();
-  return permission === 'granted';
+  return permission === "granted";
 }
 
 // Initialiser les notifications
 async function initNotifications() {
   // Attendre un peu avant de demander (après le onboarding)
-  if (localStorage.getItem('nour_notif_asked')) return;
+  if (localStorage.getItem("nour_notif_asked")) return;
 
   const reg = await registerServiceWorker();
   if (!reg) return;
@@ -36,12 +35,12 @@ async function initNotifications() {
   // Demander après 30 secondes d'utilisation
   setTimeout(async () => {
     const granted = await requestNotificationPermission();
-    localStorage.setItem('nour_notif_asked', 'true');
+    localStorage.setItem("nour_notif_asked", "true");
 
     if (granted) {
-      localStorage.setItem('nour_notif_enabled', 'true');
+      localStorage.setItem("nour_notif_enabled", "true");
       scheduleNotifications(reg);
-      showToast('🔔 Notifications activées ! On te rappellera chaque jour.');
+      showToast("🔔 Notifications activées ! On te rappellera chaque jour.");
     }
   }, 30000);
 }
@@ -51,27 +50,27 @@ function scheduleNotifications(reg) {
   if (!reg || !reg.active) return;
   const streak = state?.streak || 0;
   reg.active.postMessage({
-    type: 'SCHEDULE_NOTIFICATION',
+    type: "SCHEDULE_NOTIFICATION",
     streak: streak,
-    hour: 18 // 18h00 chaque jour
+    hour: 18, // 18h00 chaque jour
   });
 }
 
 // Réactiver les notifications au retour dans l'app
 async function reactivateNotifications() {
-  if (!localStorage.getItem('nour_notif_enabled')) return;
+  if (!localStorage.getItem("nour_notif_enabled")) return;
   const reg = await navigator.serviceWorker?.ready;
   if (reg) scheduleNotifications(reg);
 }
 
 // Afficher la bannière de notification manuelle
 function showNotificationBanner() {
-  if (localStorage.getItem('nour_notif_asked')) return;
-  if (!('Notification' in window)) return;
-  if (Notification.permission === 'granted') return;
+  if (localStorage.getItem("nour_notif_asked")) return;
+  if (!("Notification" in window)) return;
+  if (Notification.permission === "granted") return;
 
-  const banner = document.createElement('div');
-  banner.id = 'notifBanner';
+  const banner = document.createElement("div");
+  banner.id = "notifBanner";
   banner.style.cssText = `
     position: fixed;
     bottom: 20px;
@@ -108,24 +107,26 @@ function showNotificationBanner() {
 async function enableNotifications() {
   dismissNotificationBanner();
   const granted = await requestNotificationPermission();
-  localStorage.setItem('nour_notif_asked', 'true');
+  localStorage.setItem("nour_notif_asked", "true");
   if (granted) {
-    localStorage.setItem('nour_notif_enabled', 'true');
+    localStorage.setItem("nour_notif_enabled", "true");
     const reg = await navigator.serviceWorker?.ready;
     if (reg) scheduleNotifications(reg);
-    showToast('🔔 Rappels activés chaque jour à 18h !');
+    showToast("🔔 Rappels activés chaque jour à 18h !");
   } else {
-    showToast('Notifications refusées — tu peux les activer dans les paramètres');
+    showToast(
+      "Notifications refusées — tu peux les activer dans les paramètres",
+    );
   }
 }
 
 function dismissNotificationBanner() {
-  const banner = document.getElementById('notifBanner');
+  const banner = document.getElementById("notifBanner");
   if (banner) banner.remove();
-  localStorage.setItem('nour_notif_asked', 'true');
+  localStorage.setItem("nour_notif_asked", "true");
 }
 
 // Lancer au démarrage de l'app
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener("DOMContentLoaded", async () => {
   await registerServiceWorker();
 });
