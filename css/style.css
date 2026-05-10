@@ -2658,3 +2658,9 @@ body.kid-mode .level-card {
     padding: 14px !important;
   }
 }
+
+/* Badge niveau sur profil */
+.profile-level-badge {
+  font-size: 16px;
+  line-height: 1;
+}

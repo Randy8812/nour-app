@@ -370,6 +370,7 @@ function renderProfilesGrid() {
 function selectProfile(index) {
   const profiles = loadProfiles();
   currentProfile = index;
+  const profile = profiles[index];
   const defaultState = {
     currentWordIndex: 0,
     learnedWords: [],
@@ -382,11 +383,15 @@ function selectProfile(index) {
     mode: "learn",
     srsData: {},
   };
-  state = profiles[index].state
-    ? { ...defaultState, ...profiles[index].state }
-    : defaultState;
+  state = profile.state ? { ...defaultState, ...profile.state } : defaultState;
   if (!state.srsData) state.srsData = {};
   if (!state.mode) state.mode = "learn";
+
+  // Appliquer le niveau du profil (priorité sur localStorage)
+  if (profile.level) {
+    localStorage.setItem("nour_user_level", profile.level);
+  }
+
   document.getElementById("profiles").classList.add("hidden");
   applyKidTheme();
   showApp();
@@ -452,11 +457,9 @@ function setupProfileEvents() {
       return;
     }
     const isKid = document.getElementById("isKidToggle")?.checked || false;
-    const profiles = loadProfiles();
-    profiles.push({ name, avatar: selectedAvatar, isKid, state: null });
-    saveProfiles(profiles);
     modal.classList.add("hidden");
-    renderProfilesGrid();
+    // Demander le niveau pour ce profil
+    showProfileLevelSelection(name, selectedAvatar, isKid);
   };
 }
 
@@ -498,6 +501,89 @@ function getKidMessage(type) {
   };
   const list = messages[type];
   return list[Math.floor(Math.random() * list.length)];
+}
+
+// ============================================
+// NIVEAU PAR PROFIL
+// ============================================
+
+function showProfileLevelSelection(name, avatar, isKid) {
+  const screen = document.createElement("div");
+  screen.id = "profileLevelScreen";
+  screen.style.cssText = `
+    position:fixed; inset:0; background:#050e0a;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    z-index:300; padding:32px 28px; gap:28px;
+    animation:fadeIn 0.3s ease;
+  `;
+
+  screen.innerHTML = `
+    <div style="text-align:center;">
+      <div style="font-size:48px;margin-bottom:12px;">${avatar}</div>
+      <h2 style="font-size:24px;font-weight:800;color:#f5f0e8;font-family:Outfit,sans-serif;margin-bottom:8px;">Niveau de ${name}</h2>
+      <p style="font-size:15px;color:rgba(245,240,232,0.55);font-family:Outfit,sans-serif;line-height:1.6;">Choisis le niveau pour adapter l'apprentissage</p>
+    </div>
+
+    <div style="width:100%;display:flex;flex-direction:column;gap:12px;">
+      <button class="level-choice-btn" onclick="saveProfileWithLevel('${name.replace(/'/g, "\'")}', '${avatar}', ${isKid}, 'beginner', 0)">
+        <span class="level-icon-btn">🌱</span>
+        <div class="level-text">
+          <div class="level-title">Débutant</div>
+          <div class="level-desc">Je ne connais pas l'arabe — commence au début</div>
+        </div>
+        <span class="level-arrow">→</span>
+      </button>
+      <button class="level-choice-btn" onclick="saveProfileWithLevel('${name.replace(/'/g, "\'")}', '${avatar}', ${isKid}, 'intermediate', 19)">
+        <span class="level-icon-btn">📚</span>
+        <div class="level-text">
+          <div class="level-title">Intermédiaire</div>
+          <div class="level-desc">Je connais quelques mots — commence au mot 20</div>
+        </div>
+        <span class="level-arrow">→</span>
+      </button>
+      <button class="level-choice-btn" onclick="saveProfileWithLevel('${name.replace(/'/g, "\'")}', '${avatar}', ${isKid}, 'advanced', 49)">
+        <span class="level-icon-btn">🎓</span>
+        <div class="level-text">
+          <div class="level-title">Avancé</div>
+          <div class="level-desc">Je lis le Coran — commence au mot 50</div>
+        </div>
+        <span class="level-arrow">→</span>
+      </button>
+    </div>
+  `;
+
+  document.body.appendChild(screen);
+}
+
+function saveProfileWithLevel(name, avatar, isKid, level, startIndex) {
+  // Supprimer l'écran de sélection
+  document.getElementById("profileLevelScreen")?.remove();
+
+  // Sauvegarder le profil avec son niveau
+  const profiles = loadProfiles();
+  profiles.push({
+    name,
+    avatar,
+    isKid,
+    level, // Niveau propre au profil
+    state: {
+      currentWordIndex: startIndex,
+      learnedWords: [],
+      streak: 0,
+      xp: 0,
+      lastVisit: null,
+      totalQuizzes: 0,
+      correctQuizzes: 0,
+      quizActive: false,
+      mode: "learn",
+      srsData: {},
+    },
+  });
+  saveProfiles(profiles);
+  renderProfilesGrid();
+  showToast(
+    `Profil ${name} créé — niveau ${level === "beginner" ? "Débutant" : level === "intermediate" ? "Intermédiaire" : "Avancé"} !`,
+  );
 }
 
 // ============================================
