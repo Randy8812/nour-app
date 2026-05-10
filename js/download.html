@@ -1,0 +1,484 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Télécharger Nour — Arabe Coranique</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #050e0a;
+        --bg2: #091510;
+        --bg3: #0f2018;
+        --card: #142b1f;
+        --card2: #1a3628;
+        --gold: #d4a843;
+        --gold-l: #f0c860;
+        --em: #1db974;
+        --em-l: #26d984;
+        --white: #f5f0e8;
+        --dim: rgba(245, 240, 232, 0.55);
+        --faint: rgba(245, 240, 232, 0.07);
+        --purple: #818cf8;
+        --purple-l: #a78bfa;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        background: var(--bg);
+        color: var(--white);
+        font-family: "Outfit", sans-serif;
+        min-height: 100vh;
+      }
+
+      /* HEADER */
+      .header {
+        background: linear-gradient(180deg, var(--bg3), var(--bg2));
+        padding: 40px 24px 32px;
+        text-align: center;
+        border-bottom: 1px solid var(--faint);
+        position: relative;
+        overflow: hidden;
+      }
+      .header::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+          ellipse at 50% 0%,
+          rgba(29, 185, 116, 0.12) 0%,
+          transparent 70%
+        );
+      }
+      .logo-circle {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: linear-gradient(145deg, var(--em), #0a9e5a, var(--gold));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 16px;
+        box-shadow:
+          0 0 30px rgba(29, 185, 116, 0.3),
+          0 0 60px rgba(212, 168, 67, 0.15);
+      }
+      .logo-arabic {
+        font-family: "Amiri", serif;
+        font-size: 40px;
+        color: #fff;
+      }
+      .app-name {
+        font-size: 32px;
+        font-weight: 800;
+        letter-spacing: 4px;
+        margin-bottom: 8px;
+        background: linear-gradient(135deg, var(--gold), var(--em-l));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .app-tagline {
+        font-size: 16px;
+        color: var(--dim);
+        position: relative;
+      }
+
+      /* CONTENT */
+      .content {
+        max-width: 480px;
+        margin: 0 auto;
+        padding: 32px 20px 60px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      /* ANDROID CARD */
+      .platform-card {
+        border-radius: 20px;
+        padding: 24px;
+        position: relative;
+        overflow: hidden;
+      }
+      .android-card {
+        background: linear-gradient(145deg, var(--card), var(--card2));
+        border: 1px solid rgba(29, 185, 116, 0.25);
+        box-shadow:
+          0 8px 32px rgba(0, 0, 0, 0.4),
+          0 0 20px rgba(29, 185, 116, 0.08);
+      }
+      .ios-card {
+        background: linear-gradient(145deg, #1a1a35, #20203f);
+        border: 1px solid rgba(129, 140, 248, 0.25);
+        box-shadow:
+          0 8px 32px rgba(0, 0, 0, 0.4),
+          0 0 20px rgba(129, 140, 248, 0.08);
+      }
+      .android-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--em), var(--em-l));
+      }
+      .ios-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--purple), var(--purple-l));
+      }
+
+      .platform-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 20px;
+      }
+      .platform-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        flex-shrink: 0;
+      }
+      .android-icon {
+        background: rgba(29, 185, 116, 0.15);
+        border: 1px solid rgba(29, 185, 116, 0.3);
+      }
+      .ios-icon {
+        background: rgba(129, 140, 248, 0.15);
+        border: 1px solid rgba(129, 140, 248, 0.3);
+      }
+      .platform-title {
+        font-size: 20px;
+        font-weight: 800;
+        color: var(--white);
+      }
+      .platform-sub {
+        font-size: 13px;
+        color: var(--dim);
+        margin-top: 2px;
+      }
+
+      /* DOWNLOAD BTN */
+      .download-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        width: 100%;
+        padding: 16px;
+        border-radius: 99px;
+        border: none;
+        font-size: 16px;
+        font-weight: 800;
+        font-family: "Outfit", sans-serif;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.2s;
+        box-shadow: 0 6px 24px rgba(29, 185, 116, 0.4);
+      }
+      .android-btn {
+        background: linear-gradient(135deg, var(--em), var(--em-l));
+        color: #050e0a;
+      }
+      .android-btn:active {
+        transform: scale(0.97);
+      }
+
+      /* STEPS iOS */
+      .steps {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+      .step {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+      }
+      .step-num {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        background: rgba(129, 140, 248, 0.15);
+        border: 1px solid rgba(129, 140, 248, 0.4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        font-weight: 800;
+        color: var(--purple);
+      }
+      .step-content {
+        flex: 1;
+      }
+      .step-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--white);
+        margin-bottom: 2px;
+      }
+      .step-desc {
+        font-size: 12px;
+        color: var(--dim);
+        line-height: 1.5;
+      }
+      .step-connector {
+        width: 1px;
+        height: 10px;
+        background: rgba(129, 140, 248, 0.2);
+        margin-left: 14px;
+      }
+
+      .warning-box {
+        background: rgba(129, 140, 248, 0.08);
+        border: 1px solid rgba(129, 140, 248, 0.2);
+        border-radius: 10px;
+        padding: 10px 14px;
+        margin-top: 4px;
+        font-size: 12px;
+        color: rgba(129, 140, 248, 0.8);
+      }
+
+      /* INFO ANDROID */
+      .info-box {
+        background: rgba(29, 185, 116, 0.06);
+        border: 1px solid rgba(29, 185, 116, 0.15);
+        border-radius: 10px;
+        padding: 12px 14px;
+        margin-top: 4px;
+        font-size: 12px;
+        color: rgba(29, 185, 116, 0.8);
+        line-height: 1.6;
+      }
+
+      /* FEATURES */
+      .features-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-top: 4px;
+      }
+      .feature-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+        color: var(--dim);
+      }
+      .feature-check {
+        color: var(--em);
+        font-weight: 800;
+      }
+
+      /* DIVIDER */
+      .divider {
+        height: 1px;
+        background: var(--faint);
+      }
+
+      /* BACK */
+      .back-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--card);
+        border: 1px solid var(--faint);
+        color: var(--dim);
+        padding: 14px;
+        border-radius: 99px;
+        font-size: 14px;
+        font-weight: 600;
+        font-family: "Outfit", sans-serif;
+        cursor: pointer;
+        text-decoration: none;
+        transition: 0.2s;
+      }
+
+      /* ANDROID INSTALL STEPS */
+      .android-steps {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 16px;
+      }
+      .android-step {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 13px;
+        color: var(--dim);
+      }
+      .android-step-num {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        background: rgba(29, 185, 116, 0.15);
+        border: 1px solid rgba(29, 185, 116, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        font-weight: 800;
+        color: var(--em);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- HEADER -->
+    <div class="header">
+      <div class="logo-circle">
+        <span class="logo-arabic">ن</span>
+      </div>
+      <div class="app-name">NOUR</div>
+      <div class="app-tagline">Télécharger l'application</div>
+    </div>
+
+    <div class="content">
+      <!-- FEATURES -->
+      <div class="features-grid">
+        <div class="feature-item">
+          <span class="feature-check">✓</span>200 mots coraniques
+        </div>
+        <div class="feature-item">
+          <span class="feature-check">✓</span>Audio Al-Afasy
+        </div>
+        <div class="feature-item">
+          <span class="feature-check">✓</span>4 profils famille
+        </div>
+        <div class="feature-item">
+          <span class="feature-check">✓</span>Quiz variés
+        </div>
+        <div class="feature-item">
+          <span class="feature-check">✓</span>Répétition espacée
+        </div>
+        <div class="feature-item">
+          <span class="feature-check">✓</span>Mode hors ligne
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- ANDROID -->
+      <div class="platform-card android-card">
+        <div class="platform-header">
+          <div class="platform-icon android-icon">🤖</div>
+          <div>
+            <div class="platform-title">Android</div>
+            <div class="platform-sub">Samsung, Huawei, Xiaomi...</div>
+          </div>
+        </div>
+
+        <a href="downloads/nour.apk" download class="download-btn android-btn">
+          ⬇️ Télécharger pour Android
+        </a>
+
+        <div class="android-steps">
+          <div class="android-step">
+            <div class="android-step-num">1</div>
+            <span>Clique sur le bouton ci-dessus</span>
+          </div>
+          <div class="android-step">
+            <div class="android-step-num">2</div>
+            <span>Ouvre le fichier téléchargé</span>
+          </div>
+          <div class="android-step">
+            <div class="android-step-num">3</div>
+            <span>Autorise l'installation depuis ce navigateur</span>
+          </div>
+          <div class="android-step">
+            <div class="android-step-num">4</div>
+            <span>Clique "Installer" — l'icône Nour apparaît !</span>
+          </div>
+        </div>
+
+        <div class="info-box">
+          💡 Si Android demande "Autoriser les sources inconnues" → Autorise
+          uniquement pour cette installation. C'est normal pour les apps hors
+          Play Store.
+        </div>
+      </div>
+
+      <!-- iOS -->
+      <div class="platform-card ios-card">
+        <div class="platform-header">
+          <div class="platform-icon ios-icon"></div>
+          <div>
+            <div class="platform-title">iPhone</div>
+            <div class="platform-sub">Utilise Safari — pas Chrome</div>
+          </div>
+        </div>
+
+        <div class="steps">
+          <div class="step">
+            <div class="step-num">1</div>
+            <div class="step-content">
+              <div class="step-title">Ouvre Safari</div>
+              <div class="step-desc">
+                Va sur nour-app.vercel.app depuis Safari
+              </div>
+            </div>
+          </div>
+          <div class="step-connector"></div>
+          <div class="step">
+            <div class="step-num">2</div>
+            <div class="step-content">
+              <div class="step-title">Bouton Partager</div>
+              <div class="step-desc">
+                L'icône carré avec une flèche ↑ en bas de l'écran
+              </div>
+            </div>
+          </div>
+          <div class="step-connector"></div>
+          <div class="step">
+            <div class="step-num">3</div>
+            <div class="step-content">
+              <div class="step-title">Sur l'écran d'accueil</div>
+              <div class="step-desc">
+                Fais défiler le menu et clique sur cette option
+              </div>
+            </div>
+          </div>
+          <div class="step-connector"></div>
+          <div class="step">
+            <div class="step-num">4</div>
+            <div class="step-content">
+              <div class="step-title">Clique "Ajouter"</div>
+              <div class="step-desc">
+                L'icône Nour apparaît sur ton écran d'accueil !
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="warning-box">
+          ⚠️ Utilise bien Safari et non Chrome — l'installation ne fonctionne
+          qu'avec Safari sur iPhone.
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- BACK -->
+      <a href="index.html" class="back-btn">← Ouvrir l'application</a>
+    </div>
+  </body>
+</html>
