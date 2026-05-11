@@ -1250,6 +1250,8 @@ function showApp() {
   applyKidTheme();
   // Rappel de prière
   initPrayerReminder();
+  // Système famille
+  initFamilySystem();
   // Afficher défi du jour
   setTimeout(() => renderDailyChallenge(), 200);
   document.querySelector(".header-logo").addEventListener("click", () => {
@@ -1958,6 +1960,12 @@ function renderProgress() {
   // Classement famille
   renderFamilyLeaderboard();
 
+  // Classement famille connecté
+  setTimeout(() => {
+    renderConnectedFamilyLeaderboard();
+    showFamilyInviteButton();
+  }, 200);
+
   // Bouton changer de profil
   let changeBtn = document.getElementById("changeProfileBtn");
   if (!changeBtn) {
@@ -2363,6 +2371,7 @@ function saveState() {
     profiles[currentProfile].state = state;
     saveProfiles(profiles);
     syncToCloud().catch(() => {});
+    syncFamilyScore().catch(() => {});
   }
 }
 
