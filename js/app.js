@@ -1468,6 +1468,28 @@ function renderLearnScreen(direction = "right") {
   document.getElementById("audioBtn").innerHTML = "🔊 Écouter le verset";
   document.getElementById("audioBtn").style.opacity = "1";
 
+  // Bouton "En savoir plus"
+  let detailBtn = document.getElementById("wordDetailBtn");
+  if (!detailBtn) {
+    detailBtn = document.createElement("button");
+    detailBtn.id = "wordDetailBtn";
+    detailBtn.style.cssText = `
+      background:none; border:1px solid rgba(245,240,232,0.1);
+      color:rgba(245,240,232,0.45); border-radius:99px;
+      padding:8px 20px; font-size:12px; font-weight:600;
+      font-family:Outfit,sans-serif; cursor:pointer;
+      transition:all 0.2s; margin-top:4px;
+    `;
+    detailBtn.innerHTML = "📚 En savoir plus";
+    detailBtn.onclick = () =>
+      showWordDetails(WORDS[state.currentWordIndex]?.id);
+    document
+      .getElementById("mainWordCard")
+      ?.querySelector(".card-inner")
+      ?.appendChild(detailBtn);
+  }
+  detailBtn.onclick = () => showWordDetails(WORDS[state.currentWordIndex]?.id);
+
   // Afficher famille de mots selon niveau
   renderWordFamily(word);
 }
@@ -1718,6 +1740,171 @@ function getCloseWrongAnswers(word, field, count) {
 
 function shuffle(arr) {
   return arr.sort(() => Math.random() - 0.5);
+}
+
+// ============================================
+// EXPLICATION APPROFONDIE DU MOT
+// ============================================
+
+async function showWordDetails(wordId) {
+  const word =
+    WORDS.find((w) => w.id === wordId) || WORDS[state.currentWordIndex];
+  if (!word) return;
+
+  // Trouver autres versets avec ce mot
+  const relatedWords = WORDS.filter(
+    (w) => w.root === word.root && w.id !== word.id,
+  ).slice(0, 3);
+
+  const modal = document.createElement("div");
+  modal.id = "wordDetailsModal";
+  modal.style.cssText = `
+    position:fixed; inset:0; background:rgba(0,0,0,0.88);
+    display:flex; align-items:flex-end; justify-content:center;
+    z-index:1000; backdrop-filter:blur(10px);
+    animation:fadeIn 0.3s ease;
+  `;
+
+  const userLevel = localStorage.getItem("nour_user_level") || "beginner";
+
+  modal.innerHTML = `
+    <div style="
+      background:linear-gradient(180deg,#0f2018,#091510);
+      border-radius:24px 24px 0 0;
+      width:100%; max-width:480px;
+      border-top:3px solid #d4a843;
+      box-shadow:0 -20px 60px rgba(0,0,0,0.6);
+      animation:slideUp 0.4s cubic-bezier(0.34,1.2,0.64,1);
+      max-height:85vh; overflow-y:auto;
+    ">
+      <!-- Header -->
+      <div style="
+        padding:20px 24px 16px;
+        display:flex; align-items:center; justify-content:space-between;
+        position:sticky; top:0; background:#0f2018;
+        border-bottom:1px solid rgba(245,240,232,0.07);
+        z-index:1;
+      ">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div style="font-family:Amiri,serif;font-size:36px;color:#d4a843;">${word.arabic}</div>
+          <div>
+            <div style="font-size:16px;font-weight:800;color:#f5f0e8;font-family:Outfit,sans-serif;">${word.meaning}</div>
+            <div style="font-size:12px;color:rgba(29,185,116,0.8);font-style:italic;font-family:Outfit,sans-serif;">${word.transliteration}</div>
+          </div>
+        </div>
+        <button onclick="document.getElementById('wordDetailsModal').remove()"
+          style="background:none;border:none;color:rgba(245,240,232,0.4);font-size:22px;cursor:pointer;padding:4px;">✕</button>
+      </div>
+
+      <div style="padding:20px 24px;display:flex;flex-direction:column;gap:16px;">
+
+        <!-- Verset principal -->
+        <div style="background:rgba(212,168,67,0.06);border:1px solid rgba(212,168,67,0.15);border-radius:16px;padding:16px;">
+          <div style="font-size:11px;font-weight:700;color:rgba(212,168,67,0.6);font-family:Outfit,sans-serif;letter-spacing:1px;margin-bottom:10px;">VERSET PRINCIPAL</div>
+          <div style="font-family:Amiri,serif;font-size:20px;color:#d4a843;direction:rtl;line-height:2;margin-bottom:8px;">${word.verseArabic}</div>
+          <div style="font-size:13px;color:rgba(245,240,232,0.65);font-style:italic;font-family:Outfit,sans-serif;line-height:1.6;">"${word.verseFr}"</div>
+          <div style="font-size:11px;color:rgba(212,168,67,0.5);font-family:Outfit,sans-serif;margin-top:6px;font-weight:700;">${word.verseRef}</div>
+        </div>
+
+        <!-- Étymologie / Racine -->
+        <div style="background:rgba(29,185,116,0.06);border:1px solid rgba(29,185,116,0.15);border-radius:16px;padding:16px;">
+          <div style="font-size:11px;font-weight:700;color:rgba(29,185,116,0.6);font-family:Outfit,sans-serif;letter-spacing:1px;margin-bottom:10px;">ORIGINE DU MOT</div>
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+            <div style="font-family:Amiri,serif;font-size:28px;color:#1db974;">${word.root}</div>
+            <div style="font-size:13px;color:rgba(245,240,232,0.6);font-family:Outfit,sans-serif;">Racine arabe à 3 lettres</div>
+          </div>
+          <div style="font-size:13px;color:rgba(245,240,232,0.7);font-family:Outfit,sans-serif;line-height:1.7;">
+            ${getWordEtymology(word)}
+          </div>
+        </div>
+
+        <!-- Conseil spirituel -->
+        <div style="background:rgba(129,140,248,0.06);border:1px solid rgba(129,140,248,0.15);border-radius:16px;padding:16px;">
+          <div style="font-size:11px;font-weight:700;color:rgba(129,140,248,0.6);font-family:Outfit,sans-serif;letter-spacing:1px;margin-bottom:10px;">SAGESSE</div>
+          <div style="font-size:14px;color:rgba(245,240,232,0.75);font-family:Outfit,sans-serif;line-height:1.7;">${word.tip}</div>
+        </div>
+
+        <!-- Fréquence dans le Coran -->
+        <div style="background:rgba(245,240,232,0.03);border:1px solid rgba(245,240,232,0.07);border-radius:16px;padding:16px;">
+          <div style="font-size:11px;font-weight:700;color:rgba(245,240,232,0.3);font-family:Outfit,sans-serif;letter-spacing:1px;margin-bottom:10px;">DANS LE CORAN</div>
+          <div style="display:flex;align-items:center;gap:16px;">
+            <div style="text-align:center;">
+              <div style="font-size:28px;font-weight:800;color:#d4a843;font-family:Outfit,sans-serif;">${word.frequency || "?"}</div>
+              <div style="font-size:11px;color:rgba(245,240,232,0.4);font-family:Outfit,sans-serif;">occurrences</div>
+            </div>
+            <div style="font-size:13px;color:rgba(245,240,232,0.5);font-family:Outfit,sans-serif;line-height:1.6;">
+              Ce mot apparaît <strong style="color:#f5f0e8;">${word.frequency || "plusieurs"} fois</strong> dans le Coran — 
+              ${getFrequencyComment(word.frequency)}
+            </div>
+          </div>
+        </div>
+
+        <!-- Mots de la même famille -->
+        ${
+          relatedWords.length > 0
+            ? `
+        <div style="background:rgba(245,240,232,0.03);border:1px solid rgba(245,240,232,0.07);border-radius:16px;padding:16px;">
+          <div style="font-size:11px;font-weight:700;color:rgba(245,240,232,0.3);font-family:Outfit,sans-serif;letter-spacing:1px;margin-bottom:12px;">FAMILLE DE MOTS</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            ${relatedWords
+              .map(
+                (w) => `
+              <div style="display:flex;align-items:center;gap:10px;padding:8px 10px;background:rgba(5,14,10,0.5);border-radius:10px;">
+                <div style="font-family:Amiri,serif;font-size:24px;color:#d4a843;flex-shrink:0;">${w.arabic}</div>
+                <div>
+                  <div style="font-size:12px;color:rgba(29,185,116,0.7);font-style:italic;font-family:Outfit,sans-serif;">${w.transliteration}</div>
+                  <div style="font-size:13px;font-weight:600;color:#f5f0e8;font-family:Outfit,sans-serif;">${w.meaning}</div>
+                </div>
+              </div>
+            `,
+              )
+              .join("")}
+          </div>
+        </div>
+        `
+            : ""
+        }
+
+        <div style="height:8px;"></div>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) modal.remove();
+  });
+}
+
+function getWordEtymology(word) {
+  const etymologies = {
+    أله: "De la racine أله - designer la divinite. C'est le nom propre de Dieu en arabe, incomparable et unique.",
+    ربب: "De رَبَّ - elever, nourrir, eduquer. Le Seigneur est Celui qui prend soin de toute Sa creation.",
+    رحم: "Derive de رَحِم - uterus en arabe. La misericorde divine est comparee a la tendresse d'une mere.",
+    علم: "De عَلِمَ - savoir, connaitre. La meme racine donne عَالَم (monde) - la connaissance et le monde sont lies.",
+    قلب: "De قَلَّبَ - retourner, changer. Le coeur est ce qui se retourne vers Allah ou s'en eloigne.",
+    نور: "De نَارَ - briller, eclairer. La lumiere divine est celle qui guide sans aveugler.",
+    صبر: "De صَبَرَ - attacher, lier. La patience est ce qui attache l'ame a Allah dans l'epreuve.",
+    هدي: "De هَدَى - guider sur le bon chemin. La guidance divine est active - Allah guide Lui-meme.",
+    حقق: "De حَقَّ - etre vrai, reel. Al-Haqq est ce qui existe vraiment, par opposition au faux.",
+    شكر: "De شَكَرَ - reconnaitre un bienfait. La gratitude en arabe implique une reconnaissance active.",
+  };
+  return (
+    etymologies[word.root] ||
+    "La racine " +
+      word.root +
+      " donne naissance a plusieurs mots dans la langue arabe, tous lies par un sens fondamental commun."
+  );
+}
+
+function getFrequencyComment(freq) {
+  if (!freq || freq === 0) return "sa presence est significative.";
+  if (freq >= 1000) return "c'est l'un des mots les plus importants du Coran.";
+  if (freq >= 500)
+    return "il est tres frequent et essentiel a la comprehension.";
+  if (freq >= 100) return "il revient regulierement dans les versets.";
+  if (freq >= 50) return "il est present dans de nombreuses sourates.";
+  return "chaque occurrence est précieuse et significative.";
 }
 
 function renderQuizScreen() {
