@@ -2,7 +2,7 @@
 // NOUR — Certificat de Progression
 // ============================================
 
-const CERTIFICATE_MILESTONES = [10, 50, 100, 200];
+const CERTIFICATE_MILESTONES = [15, 50, 100, 200];
 
 function checkCertificate(learnedCount) {
   if (!CERTIFICATE_MILESTONES.includes(learnedCount)) return;

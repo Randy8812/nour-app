@@ -287,20 +287,26 @@ function showEmailCapture() {
 }
 
 function setupEmailEvents() {
-  const submitBtn = document.getElementById("emailSubmitBtn");
-  const skipBtn = document.getElementById("emailSkipBtn");
+  // Cloner les boutons pour éviter les doublons d'événements
+  const submitBtnOld = document.getElementById("emailSubmitBtn");
+  const skipBtnOld = document.getElementById("emailSkipBtn");
+  const submitBtn = submitBtnOld.cloneNode(true);
+  const skipBtn = skipBtnOld.cloneNode(true);
+  submitBtnOld.parentNode.replaceChild(submitBtn, submitBtnOld);
+  skipBtnOld.parentNode.replaceChild(skipBtn, skipBtnOld);
+
   const input = document.getElementById("emailInput");
   const errorEl = document.getElementById("emailError");
 
-  submitBtn.onclick = async () => {
+  submitBtn.addEventListener("click", async () => {
     const email = input.value.trim();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       input.classList.add("error");
-      errorEl.classList.remove("hidden");
+      if (errorEl) errorEl.classList.remove("hidden");
       return;
     }
     input.classList.remove("error");
-    errorEl.classList.add("hidden");
+    if (errorEl) errorEl.classList.add("hidden");
     submitBtn.textContent = "Sauvegarde...";
     submitBtn.disabled = true;
     const profiles = loadProfiles();
@@ -311,20 +317,22 @@ function setupEmailEvents() {
     submitBtn.textContent = "Sauvegarder et continuer";
     submitBtn.disabled = false;
     document.getElementById("emailScreen").classList.add("hidden");
-    showToast("✅ Email sauvegardé !");
+    showToast("Email sauvegardé !");
     showPaywall();
-  };
+  });
 
-  skipBtn.onclick = () => {
+  skipBtn.addEventListener("click", () => {
     localStorage.setItem("nour_email_captured", "true");
     document.getElementById("emailScreen").classList.add("hidden");
     showPaywall();
-  };
-
-  input.addEventListener("input", () => {
-    input.classList.remove("error");
-    errorEl.classList.add("hidden");
   });
+
+  if (input) {
+    input.addEventListener("input", () => {
+      input.classList.remove("error");
+      if (errorEl) errorEl.classList.add("hidden");
+    });
+  }
 }
 
 // ============================================
