@@ -1331,6 +1331,85 @@ function renderLearnScreen(direction = "right") {
   }
   document.getElementById("audioBtn").innerHTML = "🔊 Écouter le verset";
   document.getElementById("audioBtn").style.opacity = "1";
+
+  // Afficher famille de mots selon niveau
+  renderWordFamily(word);
+}
+
+function renderWordFamily(word) {
+  // Supprimer l'ancienne famille si existe
+  const old = document.getElementById("wordFamilySection");
+  if (old) old.remove();
+
+  const userLevel = localStorage.getItem("nour_user_level") || "beginner";
+
+  // Trouver les mots de la même racine
+  const related = WORDS.filter(
+    (w) => w.root === word.root && w.id !== word.id,
+  ).slice(0, 3);
+  if (related.length === 0) return;
+
+  const section = document.createElement("div");
+  section.id = "wordFamilySection";
+  section.style.cssText = `
+    background:linear-gradient(145deg,#0f2018,#142b1f);
+    border:1px solid rgba(29,185,116,0.15);
+    border-radius:16px; padding:16px;
+    margin-top:0; display:flex; flex-direction:column; gap:10px;
+    position:relative; overflow:hidden;
+  `;
+
+  // Titre selon niveau
+  const titles = {
+    beginner: "💡 Famille de mots",
+    intermediate: "🌿 Même racine",
+    advanced: `🔤 Racine : ${word.root}`,
+  };
+  const title = titles[userLevel] || titles.beginner;
+
+  section.innerHTML = `
+    <div style="font-size:13px;font-weight:700;color:rgba(29,185,116,0.8);font-family:Outfit,sans-serif;letter-spacing:0.5px;">
+      ${title}
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      ${related
+        .map(
+          (w) => `
+        <div style="
+          display:flex; align-items:center; gap:12px;
+          background:rgba(5,14,10,0.5); border-radius:10px; padding:10px 12px;
+          border:1px solid rgba(245,240,232,0.05);
+        ">
+          <div style="font-family:Amiri,serif;font-size:28px;color:#d4a843;direction:rtl;flex-shrink:0;">${w.arabic}</div>
+          <div style="flex:1;">
+            ${userLevel !== "advanced" ? `<div style="font-size:12px;color:rgba(29,185,116,0.7);font-style:italic;font-family:Outfit,sans-serif;">${w.transliteration}</div>` : ""}
+            <div style="font-size:13px;font-weight:600;color:#f5f0e8;font-family:Outfit,sans-serif;margin-top:2px;">${w.meaning}</div>
+          </div>
+        </div>
+      `,
+        )
+        .join("")}
+    </div>
+    ${
+      userLevel === "beginner"
+        ? `
+      <div style="font-size:11px;color:rgba(245,240,232,0.3);font-family:Outfit,sans-serif;text-align:center;">
+        Ces mots partagent la même origine — apprends-en un, comprends les autres !
+      </div>
+    `
+        : userLevel === "advanced"
+          ? `
+      <div style="font-size:12px;color:rgba(212,168,67,0.5);font-family:Outfit,sans-serif;text-align:center;font-family:Amiri,serif;">
+        الجذر : ${word.root}
+      </div>
+    `
+          : ""
+    }
+  `;
+
+  // Insérer après la word card
+  const wordCard = document.getElementById("mainWordCard");
+  if (wordCard) wordCard.after(section);
 }
 
 // Partager le mot courant
