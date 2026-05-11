@@ -1248,6 +1248,8 @@ function showApp() {
   startPremiumWatcher().catch(() => {});
   // Appliquer thème enfant si nécessaire
   applyKidTheme();
+  // Rappel de prière
+  initPrayerReminder();
   // Afficher défi du jour
   setTimeout(() => renderDailyChallenge(), 200);
   document.querySelector(".header-logo").addEventListener("click", () => {
