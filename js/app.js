@@ -1593,6 +1593,7 @@ function goNextWord() {
       showXPAnimation("+10 XP");
       checkBadges();
       updateReviewBadge();
+      checkCertificate(state.learnedWords.length);
 
       // Partage social aux milestones
       const count = state.learnedWords.length;
