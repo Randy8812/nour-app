@@ -587,6 +587,139 @@ function saveProfileWithLevel(name, avatar, isKid, level, startIndex) {
 }
 
 // ============================================
+// VERSET DU JOUR
+// ============================================
+
+function getDailyVerse() {
+  const today = getTodayStr();
+  const dayOfYear = Math.floor(
+    (new Date() - new Date(new Date().getFullYear(), 0, 0)) / 86400000,
+  );
+
+  // Sélectionner un mot différent du défi du jour
+  const verseIndex = (dayOfYear + 7) % WORDS.length;
+  const word = WORDS[verseIndex];
+
+  const completedKey = `nour_verse_${currentProfile}_${today}`;
+  const isRead = localStorage.getItem(completedKey) === "true";
+
+  return { word, isRead, completedKey };
+}
+
+function renderDailyVerse() {
+  const old = document.getElementById("dailyVerse");
+  if (old) old.remove();
+
+  const { word, isRead, completedKey } = getDailyVerse();
+  if (!word) return;
+
+  const card = document.createElement("div");
+  card.id = "dailyVerse";
+  card.style.cssText = `
+    background:linear-gradient(145deg,#1a1a35,#20203f);
+    border:1px solid rgba(129,140,248,0.2);
+    border-radius:20px; padding:20px;
+    box-shadow:0 8px 32px rgba(0,0,0,0.4);
+    position:relative; overflow:hidden;
+    margin-bottom:4px;
+  `;
+
+  card.innerHTML = `
+    <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#818cf8,#a78bfa,#c084fc);"></div>
+
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="font-size:20px;">📖</span>
+        <div>
+          <div style="font-size:14px;font-weight:800;color:#f5f0e8;font-family:Outfit,sans-serif;">Verset du jour</div>
+          <div style="font-size:11px;color:rgba(245,240,232,0.4);font-family:Outfit,sans-serif;">Méditation quotidienne</div>
+        </div>
+      </div>
+      ${
+        isRead
+          ? '<span style="background:rgba(129,140,248,0.15);color:#818cf8;border:1px solid rgba(129,140,248,0.3);padding:4px 12px;border-radius:99px;font-size:12px;font-weight:700;font-family:Outfit,sans-serif;">✅ Lu</span>'
+          : '<span style="background:rgba(129,140,248,0.15);color:#a78bfa;border:1px solid rgba(129,140,248,0.3);padding:4px 12px;border-radius:99px;font-size:12px;font-weight:700;font-family:Outfit,sans-serif;">Nouveau</span>'
+      }
+    </div>
+
+    <!-- Verset arabe -->
+    <div style="
+      background:rgba(5,14,10,0.6); border-radius:14px; padding:18px;
+      border:1px solid rgba(129,140,248,0.1); margin-bottom:12px;
+      text-align:right;
+    ">
+      <div style="font-family:Amiri,serif;font-size:22px;color:#a78bfa;direction:rtl;line-height:2;margin-bottom:8px;">
+        ${word.verseArabic}
+      </div>
+      <div style="font-size:13px;color:rgba(245,240,232,0.6);font-family:Outfit,sans-serif;font-style:italic;text-align:left;line-height:1.6;">
+        "${word.verseFr}"
+      </div>
+      <div style="font-size:11px;color:rgba(129,140,248,0.6);font-family:Outfit,sans-serif;text-align:left;margin-top:6px;font-weight:700;">
+        — ${word.verseRef}
+      </div>
+    </div>
+
+    <!-- Mot mis en valeur -->
+    <div style="display:flex;align-items:center;gap:12px;background:rgba(129,140,248,0.06);border-radius:12px;padding:12px;">
+      <div style="font-family:Amiri,serif;font-size:36px;color:#d4a843;direction:rtl;">${word.arabic}</div>
+      <div>
+        <div style="font-size:12px;color:rgba(29,185,116,0.8);font-style:italic;font-family:Outfit,sans-serif;">${word.transliteration}</div>
+        <div style="font-size:14px;font-weight:700;color:#f5f0e8;font-family:Outfit,sans-serif;">${word.meaning}</div>
+      </div>
+    </div>
+
+    ${
+      word.tip
+        ? `
+      <div style="margin-top:12px;padding:10px 12px;background:rgba(129,140,248,0.05);border-radius:10px;border-left:3px solid rgba(129,140,248,0.4);">
+        <div style="font-size:12px;color:rgba(245,240,232,0.5);font-family:Outfit,sans-serif;line-height:1.6;">💡 ${word.tip}</div>
+      </div>
+    `
+        : ""
+    }
+
+    ${
+      !isRead
+        ? `
+      <button onclick="markVerseAsRead('${completedKey}')" style="
+        width:100%; margin-top:14px;
+        background:linear-gradient(135deg,#818cf8,#a78bfa);
+        color:#fff; border:none; border-radius:99px;
+        padding:13px; font-size:14px; font-weight:800;
+        font-family:Outfit,sans-serif; cursor:pointer;
+        box-shadow:0 4px 20px rgba(129,140,248,0.3);
+      ">J'ai médité ce verset ✨</button>
+    `
+        : `
+      <div style="text-align:center;padding:8px;font-size:12px;color:rgba(129,140,248,0.5);font-family:Outfit,sans-serif;">
+        Reviens demain pour un nouveau verset
+      </div>
+    `
+    }
+  `;
+
+  // Insérer dans l'onglet apprendre après le défi du jour
+  const dailyChallenge = document.getElementById("dailyChallenge");
+  if (dailyChallenge) {
+    dailyChallenge.after(card);
+  } else {
+    const learnPanel = document.getElementById("tab-learn");
+    const sectionHeader = learnPanel?.querySelector(".section-header");
+    if (sectionHeader) sectionHeader.after(card);
+  }
+}
+
+function markVerseAsRead(completedKey) {
+  localStorage.setItem(completedKey, "true");
+  state.xp += 5;
+  showXPAnimation("+5 XP");
+  saveState();
+  updateUI();
+  renderDailyVerse();
+  showToast("🌟 Barak Allah fikoum !");
+}
+
+// ============================================
 // DÉFI DU JOUR
 // ============================================
 
@@ -1252,8 +1385,11 @@ function showApp() {
   initPrayerReminder();
   // Système famille
   initFamilySystem();
-  // Afficher défi du jour
-  setTimeout(() => renderDailyChallenge(), 200);
+  // Afficher défi du jour et verset du jour
+  setTimeout(() => {
+    renderDailyChallenge();
+    renderDailyVerse();
+  }, 200);
   document.querySelector(".header-logo").addEventListener("click", () => {
     document.getElementById("app").classList.add("hidden");
     showProfiles();
